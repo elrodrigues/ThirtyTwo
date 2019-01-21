@@ -1,2 +1,2 @@
 # CS32
-Will be deleted
+Repository for CS32, Winter19.
