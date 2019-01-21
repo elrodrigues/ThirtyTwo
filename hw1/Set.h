@@ -40,23 +40,15 @@ class Set
     void swap(Set& other);
       // Exchange the contents of this set with the other one.
 
+    void dump()
+    {
+	    for(int i = 0; i < m_size; i++)
+		    std::cout << m_set[i] << std::endl;
+    }
+
    
    private:
     ItemType m_set[DEFAULT_MAX_ITEMS];
     int m_size;
-    void shift(ItemType* st, int start, int size, bool mode)
-    {
-	   if(mode)
-	   {
-		 for(int j = size - 1; j >= start; j--)
-			 st[j+1] = st[j];
-	   }
-	   else
-	   {
-		 for(int j = start; (j + 1) < size; j++)
-			 st[j] = st[j + 1];
-	   }
-
-    }
 };
 #endif

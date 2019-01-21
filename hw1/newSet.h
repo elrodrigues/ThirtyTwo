@@ -2,8 +2,8 @@
 // Problem 2, changing from string to ItemType
 // Problem 3: implementation, max num added.
 
-#ifndef SET_INCLUDED
-#define SET_INCLUDED
+#ifndef NEWSET_INCLUDED
+#define NEWSET_INCLUDED
 #include <string>
 using ItemType = unsigned long;
 const int DEFAULT_MAX_ITEMS = 250;
@@ -12,6 +12,12 @@ class Set
 {
   public:
     Set();         // Create an empty set (i.e., one with no items).
+    Set(int size); // Constructor
+    ~Set(); // Destructor
+
+    Set(const Set& other); // Copy Constructor: defines pass by value.
+
+    Set& operator=(const Set& rhs); // Assignment Overloader
 
     bool empty() const; // Return true if the set is empty, otherwise false.
 
@@ -39,24 +45,11 @@ class Set
 
     void swap(Set& other);
       // Exchange the contents of this set with the other one.
-
    
    private:
-    ItemType m_set[DEFAULT_MAX_ITEMS];
+    ItemType* m_nset;
     int m_size;
-    void shift(ItemType* st, int start, int size, bool mode)
-    {
-	   if(mode)
-	   {
-		 for(int j = size - 1; j >= start; j--)
-			 st[j+1] = st[j];
-	   }
-	   else
-	   {
-		 for(int j = start; (j + 1) < size; j++)
-			 st[j] = st[j + 1];
-	   }
-
-    }
+    int m_lim;
+    
 };
 #endif

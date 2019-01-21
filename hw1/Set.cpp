@@ -1,5 +1,21 @@
 #include "Set.h"
 
+void shift(ItemType* st, int start, int size, bool mode)
+{
+	if(mode)
+        {
+		for(int j = size - 1; j >= start; j--)
+                         st[j+1] = st[j];
+	}
+	else
+        {
+                for(int j = start; (j + 1) < size; j++)
+                         st[j] = st[j + 1];
+        }
+
+}
+
+
 Set::Set()
 {
 	m_size = 0;
