@@ -5,7 +5,7 @@
 #ifndef SET_INCLUDED
 #define SET_INCLUDED
 #include <string>
-using ItemType = unsigned long;
+using ItemType = std::string;
 const int DEFAULT_MAX_ITEMS = 250;
 
 class Set
@@ -39,13 +39,7 @@ class Set
 
     void swap(Set& other);
       // Exchange the contents of this set with the other one.
-
-    void dump()
-    {
-	    for(int i = 0; i < m_size; i++)
-		    std::cout << m_set[i] << std::endl;
-    }
-
+   
    
    private:
     ItemType m_set[DEFAULT_MAX_ITEMS];

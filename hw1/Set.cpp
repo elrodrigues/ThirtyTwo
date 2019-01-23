@@ -13,13 +13,13 @@ void shift(ItemType* st, int start, int size, bool mode)
                          st[j] = st[j + 1];
         }
 
-}
+} // Useful function for inserting and erasing.
 
 
 Set::Set()
 {
 	m_size = 0;
-}
+} // Constructor
 
 bool Set::empty() const
 {
@@ -115,4 +115,4 @@ void Set::swap(Set& other)
 	m_size = other.m_size;
 	other.m_size = tsz;
 
-}
+} // Uses for loops.

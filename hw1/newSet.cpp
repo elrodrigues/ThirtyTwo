@@ -12,26 +12,26 @@ void shift(ItemType* st, int start, int size, bool mode)
 		for(int j = start; (j + 1) < size; j++)
 			st[j] = st[j + 1];
 	}
-}
+} // Useful function for insert and erase.
 
 Set::Set()
 {
 	m_lim = DEFAULT_MAX_ITEMS;
 	m_size = 0;
 	m_nset = new ItemType[DEFAULT_MAX_ITEMS];
-}
+} // Default constructor
 
 Set::Set(int size)
 {
 	m_lim = size;
 	m_size = 0;
 	m_nset = new ItemType[m_lim];
-}
+} // Custom constructor
 
 Set::~Set()
 {
 	delete [] m_nset;
-}
+} // Destructor
 
 Set::Set(const Set& other)
 {
@@ -42,7 +42,7 @@ Set::Set(const Set& other)
 	{
 		m_nset[i] = other.m_nset[i];
 	}
-}
+} // Copy constructor
 
 Set& Set::operator=(const Set& rhs)
 {
@@ -52,7 +52,7 @@ Set& Set::operator=(const Set& rhs)
 		swap(temp);
 	}
 	return *this;
-}
+} // Assignment overloader
 
 bool Set::empty() const
 {
@@ -150,4 +150,5 @@ void Set::swap(Set& other)
 	// Limits
 	other.m_lim = m_lim;
 	m_lim = tlim;
-}
+} // Uses pointers to swap. Same number of lines.
+

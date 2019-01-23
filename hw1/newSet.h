@@ -5,7 +5,7 @@
 #ifndef NEWSET_INCLUDED
 #define NEWSET_INCLUDED
 #include <string>
-using ItemType = unsigned long;
+using ItemType = std::string;
 const int DEFAULT_MAX_ITEMS = 250;
 
 class Set
