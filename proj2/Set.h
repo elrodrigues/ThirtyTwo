@@ -3,7 +3,6 @@
 #include <string>
 
 using ItemType = unsigned long;
-int MAX_DEFAULT_ITEMS = 24
 
 class Set
 {
@@ -27,7 +26,7 @@ private:
     ItemType m_data;
     Node* m_next;
     Node* m_prev;
-  }
+  };
   Node* m_head; // Pointer to starting node.
   int m_size; // Stores size;
 };

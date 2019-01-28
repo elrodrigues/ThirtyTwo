@@ -28,15 +28,16 @@ Set::Set(const Set& other) // COPY CONSTRUCTOR
   for(p = other.m_head; c < other.m_size; p = p->m_next)
   {
     c++;
-    insert(p->m_date);
+    insert(p->m_data);
   }
   m_size = other.m_size; // Redundant, but just in case.
 }
 
-Set& operator=(const Set& rhs) // ASSIGNMENT OVERLOADER
+Set& Set::operator=(const Set& rhs) // ASSIGNMENT OVERLOADER
 {
   Set temp(rhs);
   swap(temp);
+  return *this;
 }
 
 bool Set::empty() const
@@ -72,7 +73,7 @@ bool Set::get(int pos, ItemType& value) const
     return false;
   for(int i = 0; i < pos; i++)
     p = p->m_next;
-  value = p->m_date;
+  value = p->m_data;
   return true;
 }
 
@@ -97,7 +98,7 @@ bool Set::insert(const ItemType& value)
 
   int c = 0;
 
-  for(p = m_head; c < m_size; p = p->next)
+  for(p = m_head; c < m_size; p = p->m_next)
   {
     c++;
     if(p->m_data > value) // INSERTION
@@ -150,7 +151,7 @@ bool Set::erase(const ItemType& value)
       m_size = 0;
       return true;
     }
-    m_head = m_head->next;
+    m_head = m_head->m_next;
   }
 
   Node* nxt = p->m_next;
@@ -164,7 +165,7 @@ bool Set::erase(const ItemType& value)
   return true;
 }
 
-void swap(Set& other)
+void Set::swap(Set& other)
 {
   int tsz = other.m_size; // SWAP SIZE
   other.m_size = m_size;
@@ -175,7 +176,7 @@ void swap(Set& other)
   m_head = temp;
 }
 
-void unite(const Set& s1, const Set& s2, const Set& result)
+void unite(const Set& s1, const Set& s2, Set& result)
 {
   Set ts1(s1);
   Set ts2(s2); // ALIASING
