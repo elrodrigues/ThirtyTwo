@@ -57,7 +57,7 @@ bool Set::insert(const ItemType& value)
 {
   if(m_head == nullptr) // "INITIALIZES A SET"
   {
-    m_head = new Struct();
+    m_head = new Node();
     m_size = 1;
     m_head->m_next = m_head;
     m_head->m_prev = m_head;
@@ -69,7 +69,7 @@ bool Set::insert(const ItemType& value)
 
   Node* p;
   Node* prv;
-  Node* newGuy = new Struct();
+  Node* newGuy = new Node();
   newGuy->m_data = value;
 
   int c = 0;
@@ -103,6 +103,40 @@ bool Set::insert(const ItemType& value)
   p->m_next = newGuy;
 
   m_head->m_prev = newGuy;
-  return true;
 
+  ++m_size;
+
+  return true;
+}
+
+bool Set::erase(const ItemType& value)
+{
+  if(!(this->contains(value)))
+  {
+    return false;
+  }
+
+  Node* p;
+  for(p = m_head; p->m_data != value; p=p->m_next);
+  if(p == m_head)
+  {
+    if(m_size == 1)
+    {
+      delete m_head;
+      m_head = nullptr;
+      m_size = 0;
+      return true;
+    }
+    m_head = m_head->next;
+  }
+
+  Node* nxt = p->m_next;
+  Node* prv = p->m_prev;
+
+  prv->m_next = nxt;
+  nxt->m_prev = prv;
+
+  delete p;
+  --m_size;
+  return true;
 }
