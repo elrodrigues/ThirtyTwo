@@ -199,3 +199,24 @@ void unite(const Set& s1, const Set& s2, const Set& result)
     result.insert(val);
   }
 }
+
+void subtract(const Set& s1, const Set& s2, Set& result)
+{
+  Set ts1(s1);
+  Set ts2(s2); // ALIASING
+
+  ItemType val;
+
+  while(!(result.empty())) // EMPTY RESULT
+  {
+    result.get(0, val);
+    result.erase(val);
+  }
+
+  for(int i = 0; i < ts1.size(); i++) // MINUS OP
+  {
+    ts1.get(i, val);
+    if(!(ts2.contains(val)))
+      result.insert(val);
+  }
+}
