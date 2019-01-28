@@ -9,16 +9,19 @@ Set::Set() // CONSTRUCTOR
 Set::~Set() // DESTRUCTOR
 {
   Node* p = m_head;
-  p = p->m_prev;
-  Node* temp; // Swapping mech.
-
-  while(p != m_head)
+  if(m_head != nullptr)
   {
-    temp = p->m_prev;
+    p = p->m_prev;
+    Node* temp; // Swapping mech.
+
+    while(p != m_head)
+    {
+      temp = p->m_prev;
+      delete p;
+      p = temp;
+    }
     delete p;
-    p = temp;
   }
-  delete p;
 }
 
 Set::Set(const Set& other) // COPY CONSTRUCTOR
@@ -60,7 +63,7 @@ bool Set::contains(const ItemType& value) const
   {
     c++;
   }
-  return (c == m_size);
+  return (c != m_size);
 }
 
 bool Set::get(int pos, ItemType& value) const
