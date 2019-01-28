@@ -18,6 +18,8 @@ int main()
 	b.insert(420);
 	b.insert(1);
 
+	assert(b.size() == 5 && !(b.empty()));
+	assert(a.size() == 4 && !(a.empty()));
 	Set bah;
 	assert(!bah.erase(69));
 	Set res;
@@ -39,7 +41,8 @@ int main()
 	}
 	cout << "====== res^ sub" << endl;
 	a.swap(b);
-
+	assert(b.size() == 4 && !(b.empty()));
+	assert(a.size() == 5 && !(a.empty()));
 	for(int i = 0; i < a.size(); i++)
 	{
 		a.get(i, val);
