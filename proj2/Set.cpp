@@ -28,10 +28,13 @@ Set::Set(const Set& other) // COPY CONSTRUCTOR
 {
   Node* p;
   int c = 0;
+  ItemType val;
+  m_head = nullptr;
   for(p = other.m_head; c < other.m_size; p = p->m_next)
   {
+    other.get(c, val);
     c++;
-    insert(p->m_data);
+    insert(val);
   }
   m_size = other.m_size; // Redundant, but just in case.
 }

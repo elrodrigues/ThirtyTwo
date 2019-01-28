@@ -31,4 +31,6 @@ private:
   int m_size; // Stores size;
 };
 
+void unite(const Set& s1, const Set& s2, Set& result);
+void subtract(const Set& s1, const Set& s2, Set& result);
 #endif // SET_INCLUDED
