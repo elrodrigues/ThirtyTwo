@@ -35,6 +35,8 @@ bool Set::contains(const ItemType& value) const
 {
   Node* p;
   int c = 0;
+  if(m_head == nullptr)
+    return false;
   for(p = m_head; c < m_size && p->m_data != value; p = p->m_next)
   {
     c++;
@@ -44,6 +46,9 @@ bool Set::contains(const ItemType& value) const
 
 bool Set::get(int pos, ItemType& value) const
 {
+  if(m_head == nullptr)
+    return false;
+    
   Node* p = m_head;
   if(pos < 0 || pos >= m_size)
     return false;
