@@ -30,6 +30,7 @@ Set::Set(const Set& other) // COPY CONSTRUCTOR
     c++;
     insert(p->m_date);
   }
+  m_size = other.m_size; // Redundant, but just in case.
 }
 
 Set& operator=(const Set& rhs) // ASSIGNMENT OVERLOADER
@@ -165,7 +166,36 @@ bool Set::erase(const ItemType& value)
 
 void swap(Set& other)
 {
-  Node* temp = other.m_head;
+  int tsz = other.m_size; // SWAP SIZE
+  other.m_size = m_size;
+  m_size = tsz;
+
+  Node* temp = other.m_head; // SWAP HEADS
   other.m_head = m_head;
   m_head = temp;
+}
+
+void unite(const Set& s1, const Set& s2, const Set& result)
+{
+  Set ts1(s1);
+  Set ts2(s2); // ALIASING
+
+  ItemType val;
+
+  while(!(result.empty())) // EMPTY RESULT
+  {
+    result.get(0, val);
+    result.erase(val);
+  }
+
+  for(int i = 0; i < ts1.size(); i++) // UNION OP
+  {
+    ts1.get(i, val);
+    result.insert(val);
+  }
+  for(int i = 0; i < ts2.size(); i++)
+  {
+    ts2.get(i, val);
+    result.insert(val);
+  }
 }
