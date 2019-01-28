@@ -19,7 +19,7 @@ public:
   bool erase(const ItemType& value);
   bool contains(const ItemType& value) const;
   bool get(int pos, ItemType& value) const;
-  void swap (Set& other);
+  void swap(Set& other);
 
 private:
   struct Node // Class for node in linked list.

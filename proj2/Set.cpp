@@ -48,7 +48,7 @@ bool Set::get(int pos, ItemType& value) const
 {
   if(m_head == nullptr)
     return false;
-    
+
   Node* p = m_head;
   if(pos < 0 || pos >= m_size)
     return false;
@@ -144,4 +144,11 @@ bool Set::erase(const ItemType& value)
   delete p;
   --m_size;
   return true;
+}
+
+void swap(Set& other)
+{
+  Node* temp = other.m_head;
+  other.m_head = m_head;
+  m_head = temp;
 }
