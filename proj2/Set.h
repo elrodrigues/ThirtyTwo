@@ -2,7 +2,7 @@
 #define SET_INCLUDED
 #include <string>
 
-using ItemType = unsigned long;
+using ItemType = std::string;
 
 class Set
 {
