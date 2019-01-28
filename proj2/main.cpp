@@ -18,6 +18,8 @@ int main()
 	b.insert(420);
 	b.insert(1);
 
+	Set bah;
+	assert(!bah.erase(69));
 	Set res;
 	ItemType val;
 
