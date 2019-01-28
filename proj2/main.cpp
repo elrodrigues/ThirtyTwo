@@ -20,6 +20,7 @@ int main()
 
 	assert(b.size() == 5 && !(b.empty()));
 	assert(a.size() == 4 && !(a.empty()));
+	assert(b.contains(420));
 	Set bah;
 	assert(!bah.erase(69));
 	Set res;
