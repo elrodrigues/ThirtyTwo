@@ -25,9 +25,11 @@ private:
   struct Node // Class for node in linked list.
   {
     ItemType m_data;
-    Node* next;
+    Node* m_next;
+    Node* m_prev;
   }
-  Node* head; // Pointer to starting node.
-}
+  Node* m_head; // Pointer to starting node.
+  int m_size; // Stores size;
+};
 
-#endif
+#endif // SET_INCLUDED
