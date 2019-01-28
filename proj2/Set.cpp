@@ -1,12 +1,12 @@
 #include "Set.h"
 
-Set::Set()
+Set::Set() // CONSTRUCTOR
 {
   m_head = nullptr;
   m_size = 0;
 }
 
-Set::~Set()
+Set::~Set() // DESTRUCTOR
 {
   Node* p = m_head;
   p = p->m_prev;
@@ -19,6 +19,23 @@ Set::~Set()
     p = temp;
   }
   delete p;
+}
+
+Set::Set(const Set& other) // COPY CONSTRUCTOR
+{
+  Node* p;
+  int c = 0;
+  for(p = other.m_head; c < other.m_size; p = p->m_next)
+  {
+    c++;
+    insert(p->m_date);
+  }
+}
+
+Set& operator=(const Set& rhs) // ASSIGNMENT OVERLOADER
+{
+  Set temp(rhs);
+  swap(temp);
 }
 
 bool Set::empty() const
@@ -69,7 +86,7 @@ bool Set::insert(const ItemType& value)
     m_head->m_data = value;
     return true;
   }
-  if(this->contains(value)) // CHECKS IF ALREADY IN SET
+  if(contains(value)) // CHECKS IF ALREADY IN SET
     return false;
 
   Node* p;
@@ -116,7 +133,7 @@ bool Set::insert(const ItemType& value)
 
 bool Set::erase(const ItemType& value)
 {
-  if(!(this->contains(value)))
+  if(!(contains(value)))
   {
     return false;
   }
