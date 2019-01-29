@@ -56,3 +56,119 @@ erase all elements of result if it is non-empty
 repeatedly through s1:
   if value of s1 not in s2:
     insert value in result
+
+TESTS:
+NOTE: These tests were done for ItemType = unsigned long
+
+Set a; // default constructor
+a.insert(5); // testing insertions
+a.insert(2);
+a.insert(6);
+a.insert(4); // insertions in random order
+ItemType val;
+assert(a.size() == 4 && !(a.empty()));
+a.get(0, val);
+assert(val == 2);
+a.get(1, val);
+assert(val == 4);
+a.get(2, val);
+assert(val == 5);
+a.get(3, val);
+assert(val == 6); // ascending order test
+
+Set b;
+b.insert(25);
+b.insert(2);
+b.insert(6);
+b.insert(420);
+assert(!b.insert(6)); // testing duplicate entry
+b.insert(1);
+
+assert(b.size() == 5 && !(b.empty())); // duplicate entry
+b.get(4, val); assert(val == 420);
+
+assert(!(b.get(6, val)) && val == 420); // Out of bounds fetch
+
+Set bah;
+assert(bah.empty()); // empty check
+assert(!bah.erase(69)); // erasing with an empty Set
+assert(!(a.erase(7))); // value not in a
+assert(a.erase(6)); // erase function
+assert(!(a.get(3, val)) && val == 420); // last value missing
+assert(b.erase(1)); // erasing head node
+assert(b.get(0, val) && val == 2); // correct head placement
+
+a.swap(b); // swap function
+b.get(0, val);
+assert(val == 2);
+b.get(1, val);
+assert(val == 4);
+b.get(2, val);
+assert(val == 5);
+assert(b.size() == 3 && a.size() == 4); // tests for swap
+b.swap(a);
+
+a.get(0, val);
+assert(val == 2);
+a.get(1, val);
+assert(val == 4);
+a.get(2, val);
+assert(val == 5); // check a back to original
+
+Set c = b; // copy constructor
+assert(c.size() == 4); // check c size
+c.get(0, val);
+assert(val == 2);
+c.get(1, val);
+assert(val == 6);
+c.get(2, val);
+assert(val == 25);
+c.get(3, val);
+assert(val == 420);
+
+c = a; // Assignment operator
+assert(c.size() == 3);
+c.get(0, val);
+assert(val == 2);
+c.get(1, val);
+assert(val == 4);
+c.get(2, val);
+assert(val == 5);
+
+Set res;
+unite(a, b, res);
+assert(res.size() == 6);
+res.get(0, val); // check res and ordering for unite
+assert(val == 2);
+res.get(1, val);
+assert(val == 4);
+res.get(2, val);
+assert(val == 5);
+res.get(3, val);
+assert(val == 6);
+res.get(4, val);
+assert(val == 25);
+res.get(5, val);
+assert(val == 420);
+
+subtract(a, b, res);
+assert(res.size() == 2);
+res.get(0, val); // check res and ordering for subtract
+assert(val == 4);
+res.get(1, val);
+assert(val == 5);
+
+unite(a, b, a); // aliasing in unite
+assert(a.size() == 6);
+a.get(0, val); // check res and ordering for unite
+assert(val == 2);
+a.get(1, val);
+assert(val == 4);
+a.get(2, val);
+assert(val == 5);
+a.get(3, val);
+assert(val == 6);
+a.get(4, val);
+assert(val == 25);
+a.get(5, val);
+assert(val == 420);
