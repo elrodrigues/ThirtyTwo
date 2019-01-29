@@ -1,0 +1,58 @@
+Project 2 Report - Elvis Rodrigues
+
+LINKED LIST IMPLEMENTATION
+The linked list used here is a circular doubly-linked list with no dummy node. A head pointer is used to keep track of the list. The nodes contain a placeholder for a value (m_data), and two pointers to the next and previous node (m_next and m_prev).
+An empty Set with no node would have its head pointer `m_head` set to nullptr and size to zero.
+A single element would have next and previous pointers both pointing to itself.
+The nodes of a Set are arranged in ascending order of the nodes' values `m_data`, with the "smallest" node as the head node i.e. in the order 0 < 3 < 4 < 9 < 12 for example, with the head pointer at node '0'.
+
+PSEUDO-CODE
+
+- insert(`val`):
+if Set is empty:
+  create new node. Assign pointer to head.
+  return true
+if Set contains `val`
+  return false
+create new node with `val`
+repeatedly:
+  if `val` < value of current node
+    change new node's next and prev pointers to current and previous nodes.
+    change previous node next ptr to new node
+    change current node prev ptr to new node
+    return true
+set node to previous node // Since the current node is currently head node.
+insert item as described in loop.
+return true
+
+- erase(`val`):
+if Set not contain `val`
+  return false
+if node size is 1 and node of `val` the head
+  delete node and set head to null-pointer
+  return true
+else if node of `val` the head
+  set head pointer to node next to current head node
+delete node containing `val` and rearrange pointers
+reduce size by 1
+return true
+
+- unite(s1, s2, result):
+// get function has logic for empty Sets
+copy s1 into ts1, temporary Set
+copy s2 into ts2, temporary Set // Aliasing
+erase all elements of result if it is non-empty
+repeatedly:
+  insert elements of ts1 into result
+repeatedly:
+  insert elements of ts2 into result
+// In second insertion, insert() has logic to check for duplicates.
+
+- subtract(s1, s2, result):
+// get function has logic for empty Sets
+copy s1 into ts1, temporary Set
+copy s2 into ts2, temporary Set // Aliasing
+erase all elements of result if it is non-empty
+repeatedly through s1:
+  if value of s1 not in s2:
+    insert value in result
