@@ -17,48 +17,37 @@ bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int
 {
   Coord start(sr, sc);
   Coord end(er, ec);
-  stack<Coord> codStack;
-  // Never Eat Shredded Wheat - my sense of direction
+  stack<Coord> codSt;
+  // Never Eat Shredded Wheat - where's my sense of direction?
 
-  codStack.push(start);
-  Coord prev(-1, -1);
-  while(!codStack.empty())
+  codSt.push(start);
+  while(!codSt.empty())
   {
-    Coord cur = codStack.top();
+    Coord cur = codSt.top();
     int r = cur.r(); int c = cur.c();
+    codSt.pop();
     // cout << "(" << r << "," << c << ")" << endl;
     if(r == end.r() && c == end.c())
       return true;
-
     if(r + 1 < nRows && maze[r + 1][c] != '*' && maze[r+1][c] != 'X') // SOUTH
     {
-      codStack.push(Coord(r + 1, c));
+      codSt.push(Coord(r + 1, c));
       maze[r + 1][c] = '*';
     }
-    else if(c - 1 >= 0 && maze[r][c - 1] != '*' && maze[r][c - 1] != 'X') // WEST
+    if(c - 1 >= 0 && maze[r][c - 1] != '*' && maze[r][c - 1] != 'X') // WEST
     {
-      codStack.push(Coord(r, c - 1));
+      codSt.push(Coord(r, c - 1));
       maze[r][c - 1] = '*';
     }
-    else if(r - 1 >= 0 && maze[r - 1][c] != '*' && maze[r - 1][c] != 'X') // NORTH
+    if(r - 1 >= 0 && maze[r - 1][c] != '*' && maze[r - 1][c] != 'X') // NORTH
     {
-      codStack.push(Coord(r - 1, c));
+      codSt.push(Coord(r - 1, c));
       maze[r - 1][c] = '*';
     }
-    else if(c + 1 < nCols && maze[r][c+1] != '*' && maze[r][c+1] != 'X') // EAST
+    if(c + 1 < nCols && maze[r][c+1] != '*' && maze[r][c+1] != 'X') // EAST
     {
-      codStack.push(Coord(r, c + 1));
+      codSt.push(Coord(r, c + 1));
       maze[r][c + 1] = '*';
-    }
-    else if(!codStack.empty()) // PANIC!
-    {
-      maze[r][c] = '*';
-      codStack.pop();
-      if(!codStack.empty())
-      {
-        prev = codStack.top();
-        maze[prev.r()][prev.c()] = '.';
-      }
     }
   }
   return false;
