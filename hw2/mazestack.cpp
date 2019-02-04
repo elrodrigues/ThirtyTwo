@@ -21,10 +21,12 @@ bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int
   // Never Eat Shredded Wheat - my sense of direction
 
   codStack.push(start);
+  Coord prev(-1, -1);
   while(!codStack.empty())
   {
     Coord cur = codStack.top();
     int r = cur.r(); int c = cur.c();
+    cout << "(" << r << "," << c << ")" << endl;
     if(r == end.r() && c == end.c())
       return true;
     if(r - 1 >= 0 && maze[r - 1][c] != '*' && maze[r - 1][c] != 'X') // NORTH
@@ -47,9 +49,18 @@ bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int
       codStack.push(Coord(r, c - 1));
       maze[r][c - 1] = '*';
     }
-    cout << "(" << r << "," << c << ")" << endl;
-    codStack.pop();
+    else if(!codStack.empty())
+    {
+      maze[r][c] = '*';
+      codStack.pop();
+      if(!codStack.empty())
+      {
+        prev = codStack.top();
+        maze[prev.r()][prev.c()] = '.';
+      }
+    }
   }
+  return false;
 }
 int main()
 {
