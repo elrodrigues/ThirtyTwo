@@ -26,7 +26,7 @@ bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int
   {
     Coord cur = codStack.top();
     int r = cur.r(); int c = cur.c();
-    cout << "(" << r << "," << c << ")" << endl;
+    // cout << "(" << r << "," << c << ")" << endl;
     if(r == end.r() && c == end.c())
       return true;
 
