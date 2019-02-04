@@ -29,17 +29,8 @@ bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int
     cout << "(" << r << "," << c << ")" << endl;
     if(r == end.r() && c == end.c())
       return true;
-    if(r - 1 >= 0 && maze[r - 1][c] != '*' && maze[r - 1][c] != 'X') // NORTH
-    {
-      codStack.push(Coord(r - 1, c));
-      maze[r - 1][c] = '*';
-    }
-    else if(c + 1 < nCols && maze[r][c+1] != '*' && maze[r][c+1] != 'X') // EAST
-    {
-      codStack.push(Coord(r, c + 1));
-      maze[r][c + 1] = '*';
-    }
-    else if(r + 1 < nRows && maze[r + 1][c] != '*' && maze[r+1][c] != 'X') // SOUTH
+
+    if(r + 1 < nRows && maze[r + 1][c] != '*' && maze[r+1][c] != 'X') // SOUTH
     {
       codStack.push(Coord(r + 1, c));
       maze[r + 1][c] = '*';
@@ -48,6 +39,16 @@ bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int
     {
       codStack.push(Coord(r, c - 1));
       maze[r][c - 1] = '*';
+    }
+    else if(r - 1 >= 0 && maze[r - 1][c] != '*' && maze[r - 1][c] != 'X') // NORTH
+    {
+      codStack.push(Coord(r - 1, c));
+      maze[r - 1][c] = '*';
+    }
+    else if(c + 1 < nCols && maze[r][c+1] != '*' && maze[r][c+1] != 'X') // EAST
+    {
+      codStack.push(Coord(r, c + 1));
+      maze[r][c + 1] = '*';
     }
     else if(!codStack.empty()) // PANIC!
     {
@@ -64,18 +65,18 @@ bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int
 }
 int main()
 {
-    string maze[10] = {
-        "XXXXXXXXXX",
-        "X....X...X",
-        "X.XX.XX..X",
-        "XXX....X.X",
-        "X.XXX.XXXX",
-        "X.X...X..X",
-        "X...X.X..X",
-        "XXXXX.X.XX",
-        "X........X",
-        "XXXXXXXXXX"
-    };
+  string maze[10] = {
+      "XXXXXXXXXX",
+      "X....X...X",
+      "X.XX.XX..X",
+      "XXX....X.X",
+      "X.XXX.XXXX",
+      "X.X...X..X",
+      "X...X.X..X",
+      "XXXXX.X.XX",
+      "X........X",
+      "XXXXXXXXXX"
+  };
 
     if (pathExists(maze, 10,10, 3,5, 8,8))
         cout << "Solvable!" << endl;
