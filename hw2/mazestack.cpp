@@ -49,7 +49,7 @@ bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int
       codStack.push(Coord(r, c - 1));
       maze[r][c - 1] = '*';
     }
-    else if(!codStack.empty())
+    else if(!codStack.empty()) // PANIC!
     {
       maze[r][c] = '*';
       codStack.pop();
