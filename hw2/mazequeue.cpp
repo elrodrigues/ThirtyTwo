@@ -26,7 +26,6 @@ bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int
   {
     Coord cur = codQ.front();
     int r = cur.r(); int c = cur.c();
-    // cout << "(" << r << "," << c << ")" << endl;
     if(r == end.r() && c == end.c())
       return true;
 
@@ -39,6 +38,7 @@ bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int
       {
         rM[i] = codQ.front().r();
         cM[i] = codQ.front().c();
+        // cout << "(" << rM[i] << "," << cM[i] << ")" << endl;
         codQ.pop();
       }
       codQ.push(Coord(r + 1, c));
@@ -57,6 +57,7 @@ bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int
       {
         rM[i] = codQ.front().r();
         cM[i] = codQ.front().c();
+        // cout << "(" << rM[i] << "," << cM[i] << ")" << endl;
         codQ.pop();
       }
       codQ.push(Coord(r, c - 1));
@@ -75,6 +76,7 @@ bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int
       {
         rM[i] = codQ.front().r();
         cM[i] = codQ.front().c();
+        // cout << "(" << rM[i] << "," << cM[i] << ")" << endl;
         codQ.pop();
       }
       codQ.push(Coord(r - 1, c));
@@ -93,6 +95,7 @@ bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int
       {
         rM[i] = codQ.front().r();
         cM[i] = codQ.front().c();
+        // cout << "(" << rM[i] << "," << cM[i] << ")" << endl;
         codQ.pop();
       }
       codQ.push(Coord(r, c + 1));
@@ -106,6 +109,7 @@ bool pathExists(string maze[], int nRows, int nCols, int sr, int sc, int er, int
     {
       maze[r][c] = '*';
       codQ.pop();
+      // cout << "(" << r << "," << c << ")" << endl;
       if(!codQ.empty())
       {
         prev = codQ.front();
