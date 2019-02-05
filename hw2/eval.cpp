@@ -205,11 +205,8 @@ int main()
     assert(evaluate("w| f", trues, falses, pf, answer) == 0  &&  pf == "wf|" &&  answer);
     assert(evaluate("y|", trues, falses, pf, answer) == 1);
     assert(evaluate("n t", trues, falses, pf, answer) == 1);
-
     assert(evaluate("nt", trues, falses, pf, answer) == 1);
-    cout << "test" << endl;
     assert(evaluate("()", trues, falses, pf, answer) == 1);
-    cout << "ts" << endl;
     assert(evaluate("y(n|y)", trues, falses, pf, answer) == 1);
     assert(evaluate("t(&n)", trues, falses, pf, answer) == 1);
     assert(evaluate("(n&(t|7)", trues, falses, pf, answer) == 1);
