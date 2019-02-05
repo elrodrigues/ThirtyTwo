@@ -8,80 +8,6 @@ bool hasPred(char c1, char c2);
 bool checkSyntax(string in);
 int evaluate(string infix, const Set& trueValues, const Set& falseValues, string& postfix, bool& result);
 
-bool hasPred(char c1, char c2)
-{
-  string pred = "|&!";
-  int t1, t2;
-  for(int i = 0; i < 3; i ++)
-  {
-    if(c1 == pred[i])
-      t1 = i;
-    if(c2 == pred[i])
-      t2 = i;
-  }
-  return (t1 <= t2);
-}
-
-bool checkSyntax(string in)
-{
-  Set ops;
-  ops.insert('&'); ops.insert('|'); ops.insert('!'); ops.insert('('); ops.insert(')');
-  int sz = in.size();
-  int numB = 0;
-  for(int i = 0; i < sz; i++)
-  {
-    char t = in[i];
-    if(!ops.contains(t))
-    {
-      if(isupper(t) || isdigit(t) || !isalnum(t))
-        return false;
-    }
-    if(isalpha(t)) // operand check
-    {
-      if(i + 1 < sz && isalpha(in[i + 1]))
-        return false;
-      else if(i - 1 >= 0 && isalpha(in[i - 1]))
-        return false;
-
-    }
-    else // operator check
-    {
-      if(t == '(')
-      {
-        numB++;
-        if(i + 1 < sz && (in[i + 1] == '&' || in[i + 1] == '|'))
-          return false;
-
-      }
-      else if(t == ')')
-      {
-        numB--;
-        if(i - 1 >= 0 && (in[i - 1] == '&' || in[i - 1] == '|' || in[i - 1] == '!'))
-          return false;
-      }
-      else if(t == '!')
-      {
-        if(i + 1 >= sz)
-          return false;
-        else if(i - 1 >= 0 && isalpha(in[i - 1]))
-          return false;
-        else if(in[i + 1] == '&' || in[i + 1] == '|')
-          return false;
-      }
-      else if(t == '&' || t == '|')
-      {
-        if(i + 1 >=sz)
-          return false;
-        else if(i - 1 >= 0 && (in[i - 1] == '&' || in[i - 1] == '|' || in[i - 1] == '!'))
-          return false;
-        else if(in[i + 1] == '&' || in[i + 1] == '|' )
-          return false;
-      }
-    }
-  }
-  return (numB == 0);
-}
-
 int evaluate(string infix, const Set& trueValues, const Set& falseValues, string& postfix, bool& result)
 {
   //// INLINE SYNTAX CHECK
@@ -180,6 +106,80 @@ int evaluate(string infix, const Set& trueValues, const Set& falseValues, string
   (opstack.top() == 'T') ? (result = true) : (result = false);
   opstack.pop();
   return 0;
+}
+
+bool hasPred(char c1, char c2)
+{
+  string pred = "|&!";
+  int t1, t2;
+  for(int i = 0; i < 3; i ++)
+  {
+    if(c1 == pred[i])
+      t1 = i;
+    if(c2 == pred[i])
+      t2 = i;
+  }
+  return (t1 <= t2);
+}
+
+bool checkSyntax(string in)
+{
+  Set ops;
+  ops.insert('&'); ops.insert('|'); ops.insert('!'); ops.insert('('); ops.insert(')');
+  int sz = in.size();
+  int numB = 0;
+  for(int i = 0; i < sz; i++)
+  {
+    char t = in[i];
+    if(!ops.contains(t))
+    {
+      if(isupper(t) || isdigit(t) || !isalnum(t))
+        return false;
+    }
+    if(isalpha(t)) // operand check
+    {
+      if(i + 1 < sz && isalpha(in[i + 1]))
+        return false;
+      else if(i - 1 >= 0 && isalpha(in[i - 1]))
+        return false;
+
+    }
+    else // operator check
+    {
+      if(t == '(')
+      {
+        numB++;
+        if(i + 1 < sz && (in[i + 1] == '&' || in[i + 1] == '|'))
+          return false;
+
+      }
+      else if(t == ')')
+      {
+        numB--;
+        if(i - 1 >= 0 && (in[i - 1] == '&' || in[i - 1] == '|' || in[i - 1] == '!'))
+          return false;
+      }
+      else if(t == '!')
+      {
+        if(i + 1 >= sz)
+          return false;
+        else if(i - 1 >= 0 && isalpha(in[i - 1]))
+          return false;
+        else if(in[i + 1] == '&' || in[i + 1] == '|')
+          return false;
+      }
+      else if(t == '&' || t == '|')
+      {
+        if(i + 1 >=sz)
+          return false;
+        else if(i - 1 >= 0 && (in[i - 1] == '&' || in[i - 1] == '|' || in[i - 1] == '!'))
+          return false;
+        else if(in[i + 1] == '&' || in[i + 1] == '|' )
+          return false;
+      }
+    }
+  }
+  return (numB == 0);
 }
 
 int main()
