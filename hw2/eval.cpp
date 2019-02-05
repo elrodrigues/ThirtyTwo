@@ -1,4 +1,3 @@
-
 #include "Set.h"  // with ItemType being a type alias for char
 #include <iostream>
 #include <string>
