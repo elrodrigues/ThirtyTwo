@@ -1,14 +1,16 @@
-#include "Set.h"
+
+#include "Set.h"  // with ItemType being a type alias for char
 #include <iostream>
+#include <string>
 #include <stack>
 #include <cctype>
-#include <string>
+#include <cassert> // Needed for tests!
 using namespace std;
 bool hasPred(char c1, char c2);
 bool checkSyntax(string in);
-int evaluate(string infix, const Set& trueValues, const Set& falseValues, string& postfix, bool& result);
 
-int evaluate(string infix, const Set& trueValues, const Set& falseValues, string& postfix, bool& result)
+int evaluate(string infix, const Set& trueValues, const Set& falseValues,
+  string& postfix, bool& result)
 {
   //// INLINE SYNTAX CHECK
   string inf;
@@ -18,14 +20,11 @@ int evaluate(string infix, const Set& trueValues, const Set& falseValues, string
     if(infix[i] != ' ' && infix[i] != '\t')
       inf = inf + infix[i];
   }
-  if(!checkSyntax(inf))
-  {
-    cerr << "Bad syntax" << endl;
-    return false;
-  }
+  if(!checkSyntax(inf)) // Outsourcing Deluxe!
+    return 1; // Bad Syntax
 
   //// INFIX TO POSTFIX
-  postfix = "";
+  postfix = ""; // Just in case.
   for(int i = 0; i < inf.size(); i++)
   {
     char t = inf[i];
@@ -68,9 +67,9 @@ int evaluate(string infix, const Set& trueValues, const Set& falseValues, string
     if(isalpha(opn))
     {
       if(!trueValues.contains(opn) && !falseValues.contains(opn))
-        return 2;
+        return 2; // Contained in neither
       else if(trueValues.contains(opn) && falseValues.contains(opn))
-        return 3;
+        return 3; // Contained in both
       if(trueValues.contains(opn))
         opstack.push('T');
       else
@@ -82,7 +81,7 @@ int evaluate(string infix, const Set& trueValues, const Set& falseValues, string
         case '!':
           evT = opstack.top();
           opstack.pop();
-          (evT == 'T') ? opstack.push('F') : opstack.push('T');
+          (evT == 'T') ? opstack.push('F') : opstack.push('T'); // Emulate ops.
           break;
         case '|':
           evT = opstack.top();
@@ -104,8 +103,8 @@ int evaluate(string infix, const Set& trueValues, const Set& falseValues, string
     }
   }
   (opstack.top() == 'T') ? (result = true) : (result = false);
-  opstack.pop();
-  return 0;
+  opstack.pop(); // Final pop.
+  return 0; // All g.
 }
 
 bool hasPred(char c1, char c2)
@@ -125,8 +124,11 @@ bool hasPred(char c1, char c2)
 bool checkSyntax(string in)
 {
   Set ops;
-  ops.insert('&'); ops.insert('|'); ops.insert('!'); ops.insert('('); ops.insert(')');
+  ops.insert('&'); ops.insert('|'); ops.insert('!'); ops.insert('(');
+  ops.insert(')');
   int sz = in.size();
+  if(sz == 0)
+    return false;
   int numB = 0;
   for(int i = 0; i < sz; i++)
   {
@@ -136,7 +138,7 @@ bool checkSyntax(string in)
       if(isupper(t) || isdigit(t) || !isalnum(t))
         return false;
     }
-    if(isalpha(t)) // operand check
+    if(isalpha(t)) // operand check, much easier.
     {
       if(i + 1 < sz && isalpha(in[i + 1]))
         return false;
@@ -149,14 +151,18 @@ bool checkSyntax(string in)
       if(t == '(')
       {
         numB++;
-        if(i + 1 < sz && (in[i + 1] == '&' || in[i + 1] == '|'))
+        if(i + 1 < sz && (in[i + 1] == '&' || in[i + 1] == '|' ||
+        in[i + 1] == ')'))
+          return false;
+        else if(i - 1 >= 0 && isalpha(in[i - 1]))
           return false;
 
       }
       else if(t == ')')
       {
         numB--;
-        if(i - 1 >= 0 && (in[i - 1] == '&' || in[i - 1] == '|' || in[i - 1] == '!'))
+        if(i - 1 >= 0 && (in[i - 1] == '&' || in[i - 1] == '|' ||
+        in[i - 1] == '!'))
           return false;
       }
       else if(t == '!')
@@ -172,31 +178,52 @@ bool checkSyntax(string in)
       {
         if(i + 1 >=sz)
           return false;
-        else if(i - 1 >= 0 && (in[i - 1] == '&' || in[i - 1] == '|' || in[i - 1] == '!'))
+        else if(i - 1 >= 0 && (in[i - 1] == '&' || in[i - 1] == '|' ||
+        in[i - 1] == '!'))
           return false;
         else if(in[i + 1] == '&' || in[i + 1] == '|' )
           return false;
       }
     }
   }
-  return (numB == 0);
+  return (numB == 0); // Final bracket check.
 }
 
 int main()
 {
-  Set t;
-  t.insert('a');
-  t.insert('c');
-  t.insert('l');
-  t.insert('u');
-  Set f;
-  f.insert('n');
-  f.insert('s');
-  f.insert('x');
-  string in = "a&!(s|u&c|n)|!!!(s&u&n)";
-  string post="bro";
-  bool res;
-  evaluate(in, t, f, post, res);
-  cout << post << endl;
-  cout << res << endl;
+    string trueChars  = "tywz";
+    string falseChars = "fnx";
+    Set trues;
+    Set falses;
+    for (int k = 0; k < trueChars.size(); k++)
+        trues.insert(trueChars[k]);
+    for (int k = 0; k < falseChars.size(); k++)
+        falses.insert(falseChars[k]);
+
+    string pf;
+    bool answer;
+    assert(evaluate("w| f", trues, falses, pf, answer) == 0  &&  pf == "wf|" &&  answer);
+    assert(evaluate("y|", trues, falses, pf, answer) == 1);
+    assert(evaluate("n t", trues, falses, pf, answer) == 1);
+
+    assert(evaluate("nt", trues, falses, pf, answer) == 1);
+    cout << "test" << endl;
+    assert(evaluate("()", trues, falses, pf, answer) == 1);
+    cout << "ts" << endl;
+    assert(evaluate("y(n|y)", trues, falses, pf, answer) == 1);
+    assert(evaluate("t(&n)", trues, falses, pf, answer) == 1);
+    assert(evaluate("(n&(t|7)", trues, falses, pf, answer) == 1);
+    assert(evaluate("", trues, falses, pf, answer) == 1);
+    assert(evaluate("f  |  !f & (t&n) ", trues, falses, pf, answer) == 0
+                           &&  pf == "ff!tn&&|"  &&  !answer);
+    assert(evaluate(" x  ", trues, falses, pf, answer) == 0  &&  pf == "x"  &&  !answer);
+    trues.insert('x');
+    assert(evaluate("((x))", trues, falses, pf, answer) == 3);
+    falses.erase('x');
+    assert(evaluate("((x))", trues, falses, pf, answer) == 0  &&  pf == "x"  &&  answer);
+    trues.erase('w');
+    assert(evaluate("w| f", trues, falses, pf, answer) == 2);
+    falses.insert('w');
+    assert(evaluate("w| f", trues, falses, pf, answer) == 0  &&  pf == "wf|" &&  !answer);
+    cout << "Passed all tests" << endl;
 }
