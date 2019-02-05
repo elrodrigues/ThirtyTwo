@@ -4,6 +4,9 @@
 #include <cctype>
 #include <string>
 using namespace std;
+bool hasPred(char c1, char c2);
+bool checkSyntax(string in);
+int evaluate(string infix, const Set& trueValues, const Set& falseValues, string& postfix, bool& result);
 
 bool hasPred(char c1, char c2)
 {
@@ -81,7 +84,7 @@ bool checkSyntax(string in)
 
 int evaluate(string infix, const Set& trueValues, const Set& falseValues, string& postfix, bool& result)
 {
-  //// Inline syntax check.
+  //// INLINE SYNTAX CHECK
   string inf;
   stack<char> opstack; // Operator / Operand stack
   for(int i = 0; i < infix.size(); i++)
@@ -128,18 +131,72 @@ int evaluate(string infix, const Set& trueValues, const Set& falseValues, string
     postfix = postfix + opstack.top();
     opstack.pop();
   }
-  return true;
+  //// EVALUATE POSTFIX
+  // Sanity check
+  // Actual evaluation: opstack converted to operand stack now.
+  char evT; // Temporary evaluation variable
+  char evT2; // Temporary evaluation variable
+  for(int i = 0; i < postfix.size(); i++)
+  {
+    char opn = postfix[i];
+    if(isalpha(opn))
+    {
+      if(!trueValues.contains(opn) && !falseValues.contains(opn))
+        return 2;
+      else if(trueValues.contains(opn) && falseValues.contains(opn))
+        return 3;
+      if(trueValues.contains(opn))
+        opstack.push('T');
+      else
+        opstack.push('F');
+    }
+    else
+    {
+      switch(opn){
+        case '!':
+          evT = opstack.top();
+          opstack.pop();
+          (evT == 'T') ? opstack.push('F') : opstack.push('T');
+          break;
+        case '|':
+          evT = opstack.top();
+          opstack.pop();
+          evT2 = opstack.top();
+          opstack.pop();
+          (evT == 'F' && evT2 == 'F') ? opstack.push('F') : opstack.push('T');
+          break;
+        case '&':
+          evT = opstack.top();
+          opstack.pop();
+          evT2 = opstack.top();
+          opstack.pop();
+          (evT == 'T' && evT2 == 'T') ? opstack.push('T') : opstack.push('F');
+          break;
+        default:
+          cerr << "Fatal error" << endl;
+      }
+    }
+  }
+  (opstack.top() == 'T') ? (result = true) : (result = false);
+  opstack.pop();
+  return 0;
 }
 
 int main()
 {
   Set t;
   t.insert('a');
+  t.insert('c');
+  t.insert('l');
+  t.insert('u');
   Set f;
+  f.insert('n');
   f.insert('s');
-  string in = "a|!!!(s&u&n)";
+  f.insert('x');
+  string in = "a&!(s|u&c|n)|!!!(s&u&n)";
   string post="bro";
   bool res;
   evaluate(in, t, f, post, res);
   cout << post << endl;
+  cout << res << endl;
 }
