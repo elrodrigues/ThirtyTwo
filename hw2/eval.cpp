@@ -187,39 +187,4 @@ bool checkSyntax(string in)
   }
   return (numB == 0); // Final bracket check.
 }
-
-int main()
-{
-    string trueChars  = "tywz";
-    string falseChars = "fnx";
-    Set trues;
-    Set falses;
-    for (int k = 0; k < trueChars.size(); k++)
-        trues.insert(trueChars[k]);
-    for (int k = 0; k < falseChars.size(); k++)
-        falses.insert(falseChars[k]);
-
-    string pf;
-    bool answer;
-    assert(evaluate("w| f", trues, falses, pf, answer) == 0  &&  pf == "wf|" &&  answer);
-    assert(evaluate("y|", trues, falses, pf, answer) == 1);
-    assert(evaluate("n t", trues, falses, pf, answer) == 1);
-    assert(evaluate("nt", trues, falses, pf, answer) == 1);
-    assert(evaluate("()", trues, falses, pf, answer) == 1);
-    assert(evaluate("y(n|y)", trues, falses, pf, answer) == 1);
-    assert(evaluate("t(&n)", trues, falses, pf, answer) == 1);
-    assert(evaluate("(n&(t|7)", trues, falses, pf, answer) == 1);
-    assert(evaluate("", trues, falses, pf, answer) == 1);
-    assert(evaluate("f  |  !f & (t&n) ", trues, falses, pf, answer) == 0
-                           &&  pf == "ff!tn&&|"  &&  !answer);
-    assert(evaluate(" x  ", trues, falses, pf, answer) == 0  &&  pf == "x"  &&  !answer);
-    trues.insert('x');
-    assert(evaluate("((x))", trues, falses, pf, answer) == 3);
-    falses.erase('x');
-    assert(evaluate("((x))", trues, falses, pf, answer) == 0  &&  pf == "x"  &&  answer);
-    trues.erase('w');
-    assert(evaluate("w| f", trues, falses, pf, answer) == 2);
-    falses.insert('w');
-    assert(evaluate("w| f", trues, falses, pf, answer) == 0  &&  pf == "wf|" &&  !answer);
-    cout << "Passed all tests" << endl;
-}
+//// INSERT MAIN ROUTINE BELOW

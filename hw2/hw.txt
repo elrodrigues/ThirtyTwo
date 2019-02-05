@@ -27,4 +27,5 @@ Question 4: first 12 coordinates popped from queue. <queue> was used here. (Orde
 (1,4)
 (7,5)
 
-Since North and East are the last directions pushed in stack, the stack algorithm explores North and East first at any point. Conversely, the queue algorithms evaluates maze points in terms of "stages" (see above). It always follows S, W, N, E order.
+Since North and East are the last directions pushed in stack, the stack algorithm explores in the order East, North, West, South at any point (Last in, First Out).
+Conversely, the queue algorithm evaluates surrounding points in the order "South, West, North, East" because of its First in, First out structure. Above, you can see the surrounding points evaluated at different "stages" of progression.
