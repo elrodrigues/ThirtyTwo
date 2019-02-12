@@ -29,7 +29,6 @@ class Hotel : public Landmark
 public:
   Hotel(string name);
   virtual string icon() const;
-  // virtual string color() const {}
   virtual ~Hotel();
 };
 
@@ -51,7 +50,6 @@ class Restaurant : public Landmark
 public:
   Restaurant(string name, int size);
   virtual string icon() const;
-  // virtual string color() const {}
   virtual ~Restaurant();
 
 private:
