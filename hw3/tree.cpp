@@ -1,6 +1,3 @@
-#include <iostream>
-using namespace std;
-
   // Return the number of ways that all n2 elements of a2 appear
   // in the n1 element array a1 in the same order (though not
   // necessarily consecutively).  The empty sequence appears in a
@@ -14,7 +11,6 @@ using namespace std;
   //	50 40 30			3
 int countIncludes(const double a1[], int n1, const double a2[], int n2)
 {
-    // return -999;  // This is incorrect.
     if(n2 <= 0)
       return 1;
     if(n1 < n2)
@@ -50,40 +46,40 @@ void exchange(double& x, double& y)
   // All the elements > divider end up in no particular order.
   // All the elements < divider end up in no particular order.
 void divide(double a[], int n, double divider,
-				    int& firstNotGreater, int& firstLess)
+		    int& firstNotGreater, int& firstLess)
 {
-    if (n < 0)
-	n = 0;
+  if (n < 0)
+    n = 0;
 
-      // It will always be the case that just before evaluating the loop
-      // condition:
-      //  firstNotGreater <= firstUnknown and firstUnknown <= firstLess
-      //  Every element earlier than position firstNotGreater is > divider
-      //  Every element from position firstNotGreater to firstUnknown-1 is
-      //    == divider
-      //  Every element from firstUnknown to firstLess-1 is not known yet
-      //  Every element at position firstLess or later is < divider
+  // It will always be the case that just before evaluating the loop
+  // condition:
+  //  firstNotGreater <= firstUnknown and firstUnknown <= firstLess
+  //  Every element earlier than position firstNotGreater is > divider
+  //  Every element from position firstNotGreater to firstUnknown-1 is
+  //    == divider
+  //  Every element from firstUnknown to firstLess-1 is not known yet
+  //  Every element at position firstLess or later is < divider
 
-    firstNotGreater = 0;
-    firstLess = n;
-    int firstUnknown = 0;
-    while (firstUnknown < firstLess)
+  firstNotGreater = 0;
+  firstLess = n;
+  int firstUnknown = 0;
+  while (firstUnknown < firstLess)
+  {
+    if (a[firstUnknown] < divider)
     {
-	if (a[firstUnknown] < divider)
-	{
-	    firstLess--;
-	    exchange(a[firstUnknown], a[firstLess]);
-	}
-	else
-	{
-	    if (a[firstUnknown] > divider)
-	    {
-		exchange(a[firstNotGreater], a[firstUnknown]);
-		firstNotGreater++;
-	    }
-	    firstUnknown++;
-	}
+      firstLess--;
+      exchange(a[firstUnknown], a[firstLess]);
     }
+    else
+    {
+      if(a[firstUnknown] > divider)
+      {
+        exchange(a[firstNotGreater], a[firstUnknown]);
+        firstNotGreater++;
+      }
+      firstUnknown++;
+    }
+  }
 }
 
   // Rearrange the elements of the array so that
@@ -91,11 +87,12 @@ void divide(double a[], int n, double divider,
   // If n <= 1, do nothing.
 void order(double a[], int n)
 {
-    return;  // This is not always correct.
-}
-int main()
-{
-  double test[] = {10, 50, 40, 20, 50, 40, 30, 20};
-  double test2[] = {20, 10, 40};
-  cout << countIncludes(test, 8, test2, 1) << endl;
+    if(n <= 1)
+      return;
+    int pos, dum; // Position, Dummy variable
+    divide(a, n, a[0], pos, dum);
+    if(pos == 0)
+      order(a + 1, n - 1);
+    else
+      order(a, n);
 }

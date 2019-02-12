@@ -3,7 +3,6 @@
   // least one of the array elements, false otherwise.
 bool anyTrue(const double a[], int n)
 {
-    // return false;  // This is not always correct.
     if(n <= 0)
       return false;
     if(somePredicate(a[0]))
@@ -15,7 +14,6 @@ bool anyTrue(const double a[], int n)
   // somePredicate function returns true.
 int countTrue(const double a[], int n)
 {
-    // return -999;  // This is incorrect.
     if(n <= 0) // STOPGAP
       return 0;
     if(somePredicate(a[0]))
@@ -29,7 +27,6 @@ int countTrue(const double a[], int n)
   // element, return -1.
 int firstTrue(const double a[], int n)
 {
-  // return -999;  // This is incorrect.
   if(n <= 0) // Not Found
     return -1;
   if(somePredicate(a[0])) // Found
@@ -48,7 +45,6 @@ int firstTrue(const double a[], int n)
   // elements, return -1.
 int positionOfMin(const double a[], int n)
 {
-    // return -999;  // This is incorrect.
     if(n <= 0)
       return -1;
     if(n == 1)
@@ -77,7 +73,6 @@ int positionOfMin(const double a[], int n)
   //    10 20 20
 bool includes(const double a1[], int n1, const double a2[], int n2)
 {
-    // return false;  // This is not always correct.
     if(n2 <= 0)
       return true;
     if(n1 < n2) // Pigeonhole
