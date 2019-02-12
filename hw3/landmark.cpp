@@ -1,7 +1,7 @@
 class Landmark
 {
 public:
-  Landmark(string color);
+  Landmark(string name);
   string name() const;
   virtual string icon() const = 0;
   virtual string color() const;
