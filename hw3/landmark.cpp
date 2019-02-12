@@ -42,7 +42,7 @@ string Hotel::icon() const
 }
 Hotel::~Hotel()
 {
-  cout << "Destroying the hotel " << name() <<"." << endl;
+  cout << "Destroying the hotel " << name() << "." << endl;
 }
 
 class Restaurant : public Landmark
@@ -74,7 +74,7 @@ string Restaurant::icon() const
 
 Restaurant::~Restaurant()
 {
-  cout << "Destroying the restaurant " << name() <<"." << endl;
+  cout << "Destroying the restaurant " << name() << "." << endl;
 }
 
 class Hospital : public Landmark
@@ -99,5 +99,5 @@ string Hospital::color() const
 }
 Hospital::~Hospital()
 {
-  cout << "Destroying the hospital " << name() <<"." << endl;
+  cout << "Destroying the hospital " << name() << "." << endl;
 }
