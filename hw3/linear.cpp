@@ -1,9 +1,3 @@
-#include <iostream>
-using namespace std;
-bool somePredicate(double x)
-{
-  return x == 42;
-}
 
   // Return true if the somePredicate function returns true for at
   // least one of the array elements, false otherwise.
@@ -36,12 +30,12 @@ int countTrue(const double a[], int n)
 int firstTrue(const double a[], int n)
 {
   // return -999;  // This is incorrect.
-  if(n <= 0)
+  if(n <= 0) // Not Found
     return -1;
-  if(somePredicate(a[0]))
+  if(somePredicate(a[0])) // Found
     return 0;
   int t = firstTrue(a + 1, n - 1);
-  if(t == -1) // PERMEATE FUNCTION
+  if(t == -1)
     return -1;
   else
     return 1 + t;
@@ -54,7 +48,16 @@ int firstTrue(const double a[], int n)
   // elements, return -1.
 int positionOfMin(const double a[], int n)
 {
-    return -999;  // This is incorrect.
+    // return -999;  // This is incorrect.
+    if(n <= 0)
+      return -1;
+    if(n == 1)
+      return 0;
+    int t = positionOfMin(a, n - 1);
+    if(a[t] <= a[n - 1])
+      return t;
+    else
+      return n - 1;
 }
 
   // If all n2 elements of a2 appear in the n1 element array a1, in
@@ -74,11 +77,14 @@ int positionOfMin(const double a[], int n)
   //    10 20 20
 bool includes(const double a1[], int n1, const double a2[], int n2)
 {
-    return false;  // This is not always correct.
-}
+    // return false;  // This is not always correct.
+    if(n2 <= 0)
+      return true;
+    if(n1 < n2) // Pigeonhole
+      return false;
 
-int main()
-{
-  double test[] = {1, 2, 3, 4, 42};
-  cout << firstTrue(test, 5) << endl;
+    if(a1[0] != a2[0])
+      return includes(a1 + 1, n1 - 1, a2, n2);
+    else
+      return includes(a1 + 1, n1 - 1, a2 + 1, n2 - 1);
 }
