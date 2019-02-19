@@ -21,7 +21,7 @@ public:
     virtual ~GameWorld()
     {
     }
-    
+
     virtual int init() = 0;
     virtual int move() = 0;
     virtual void cleanUp() = 0;
@@ -40,12 +40,12 @@ public:
     {
         return m_lives;
     }
-    
+
     void decLives()
     {
         m_lives--;
     }
-    
+
     void incLives()
     {
         m_lives++;
@@ -55,7 +55,7 @@ public:
     {
         return m_score;
     }
-    
+
     void increaseScore(int howMuch)
     {
         m_score += howMuch;
@@ -65,7 +65,7 @@ public:
     {
         return m_assetPath;
     }
-    
+
       // The following should be used by only the framework, not the student
 
     bool isGameOver() const
@@ -73,16 +73,16 @@ public:
         return m_lives == 0;
     }
 
-    void advanceToNextLevel() 
+    void advanceToNextLevel()
     {
         ++m_level;
     }
-   
+
     void setController(GameController* controller)
     {
         m_controller = controller;
     }
-    
+
 private:
     int m_lives;
     int m_score;
