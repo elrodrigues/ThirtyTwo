@@ -1,23 +1,36 @@
 #include "Actor.h"
-#include "StudentWorld.h"
+#include "StudentWorld.h" // Needed for collision function
 
 // Students:  Add code to this file, Actor.h, StudentWorld.h, and StudentWorld.cpp
 ///// BASE
-Actor::Actor(int imageID, int col, int row, Direction stDir, int depth)
-: GraphObject(imageID, col, row, stDir, depth)
+Actor::Actor(int imageID, int col, int row, Direction stDir, int depth, StudentWorld* wld, bool mort)
+: GraphObject(imageID, col, row, stDir, depth), m_mort(mort), m_wld(wld)
 {}
-
-//// WALL, EXIT AND PIT
-Wall::Wall(int imageID, int col, int row, Direction stDir, int depth)
-: Actor(imageID, col, row, stDir, depth)
+// Actor::~Actor(){}
+bool Actor::isMortal() const
+{
+  return m_mort;
+}
+bool Actor::getWorld() const
+{
+  return m_wld;
+}
+//// FIXED
+Fixed::Fixed(int imageID, int col, int row, Direction stDir, int depth, StudentWorld* wld)
+: Actor(imageID, col, row, stDir, depth, wld, false)
+{}
+// WALL, EXIT AND PIT
+Wall::Wall(int imageID, int col, int row, Direction stDir, int depth, StudentWorld* wld)
+: Fixed(imageID, col, row, stDir, depth, wld)
 {}
 void Wall::doSomething()
 {
   return;
 }
+// Wall::~Wall(){std::cerr << "Wall at " << getX() << "," <<getY() << " rip." << std::endl;}
 //// MORTALS
-Mortal::Mortal(int imageID, int col, int row, Direction stDir, int depth)
-: Actor(imageID, col, row, stDir, depth), m_life(true)
+Mortal::Mortal(int imageID, int col, int row, Direction stDir, int depth, StudentWorld* wld)
+: Actor(imageID, col, row, stDir, depth, wld, true), m_life(true)
 {}
 bool Mortal::isAlive() const
 {
@@ -27,11 +40,14 @@ void Mortal::setLife(bool state)
 {
   m_life = state;
 }
+// Mortal::~Mortal(){}
 
 // PENELOPE
-Penelope::Penelope(int imageID, int col, int row, Direction stDir, int depth)
-: Mortal(imageID, col, row, stDir, depth), m_inftick(0), m_infected(false)
+Penelope::Penelope(int imageID, int col, int row, Direction stDir, int depth, StudentWorld* wld)
+: Mortal(imageID, col, row, stDir, depth, wld), m_inftick(0), m_infected(false)
 {}
+// Penelope::~Penelope()
+// {std::cerr << "Penelope at " << getX() << "," <<getY() << " rip." << std::endl;}
 void Penelope::doSomething()
 {
   return;

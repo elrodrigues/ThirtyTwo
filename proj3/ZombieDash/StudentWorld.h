@@ -15,8 +15,9 @@ public:
     virtual int init();
     virtual int move();
     virtual void cleanUp();
-    void addActor(Actor* a);
-    void remActor(std::list<Actor*>::iterator p);
+    virtual void addActor(Actor* a);
+    virtual void remActor(std::list<Actor*>::iterator p);
+    ~StudentWorld(){}
 
 private:
     std::list<Actor*> m_contain;

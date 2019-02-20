@@ -52,10 +52,11 @@ int StudentWorld::init()
 				ge = lev.getContentsOf(i, j);
 				switch(ge){
 					case Level::wall:
-						m_contain.push_front(new Wall(IID_WALL, SPRITE_WIDTH*i, SPRITE_HEIGHT*j, GraphObject::right, 0));
+						m_contain.push_front(new Wall(IID_WALL, SPRITE_WIDTH*i, SPRITE_HEIGHT*j, GraphObject::right, 0, this));
 						break;
 					case Level::player:
-						m_contain.push_front(new Penelope(IID_PLAYER, SPRITE_WIDTH*i, SPRITE_HEIGHT*j, GraphObject::right, 0));
+						m_contain.push_front(new Penelope(IID_PLAYER, SPRITE_WIDTH*i, SPRITE_HEIGHT*j, GraphObject::right, 0, this));
+						m_player = m_contain.begin();
 						break;
 				}
 			}
@@ -67,11 +68,22 @@ int StudentWorld::move()
 {
     // This code is here merely to allow the game to build, run, and terminate after you hit enter.
     // Notice that the return value GWSTATUS_PLAYER_DIED will cause our framework to end the current level.
-		int key = 0;
-		if(getKey(key) && key == KEY_PRESS_TAB)
+		//// CHECK ACTORS ARE ALIVE
+		for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
+		{
+			if(!(*p)->isMortal() || (*p)->isAlive())
+				(*p)->doSomething();
+		}
+		if(!(*m_player)->isAlive())
 		{
 			decLives();
 			return GWSTATUS_PLAYER_DIED;
+		}
+		// Makeshift escape
+		int key = 0;
+		if(getKey(key) && key == KEY_PRESS_TAB)
+		{
+			(*m_player)->setLife(false);
 		}
 		return GWSTATUS_CONTINUE_GAME;
 }
