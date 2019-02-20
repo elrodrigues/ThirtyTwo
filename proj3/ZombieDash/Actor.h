@@ -20,7 +20,7 @@ private:
   StudentWorld* m_wld;
 };
 //// FIXED
-class Fixed : public Actor
+class Fixed : public Actor // Collection of mort = false
 {
 public:
   Fixed(int imageID, int col, int row, Direction stDir, int depth, StudentWorld* wld);
@@ -38,7 +38,7 @@ public:
 };
 
 //// MORTAL MEMBERS
-class Mortal : public Actor // Adds functions for "mortal" objects
+class Mortal : public Actor // Collection of mort = true
 {
 public:
   Mortal(int imageID, int col, int row, Direction stDir, int depth, StudentWorld* wld);
