@@ -15,13 +15,14 @@ public:
     virtual int init();
     virtual int move();
     virtual void cleanUp();
-    virtual void addActor(Actor* a);
-    virtual void remActor(std::list<Actor*>::iterator p);
-    ~StudentWorld(){}
+    virtual ~StudentWorld();
+    virtual int fetchKey() const;
+    virtual bool checkColl(const int& col, const int& row);
 
 private:
     std::list<Actor*> m_contain;
     std::list<Actor*>::iterator m_player;
+    int m_key;
 };
 
 #endif // STUDENTWORLD_H_

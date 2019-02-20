@@ -11,7 +11,7 @@ public:
   Actor(int imageID, int col, int row, Direction stDir, int depth, StudentWorld* wld, bool mort);
   virtual void doSomething() = 0;
   virtual bool isMortal() const;
-  bool getWorld() const;
+  StudentWorld* getWorld() const;
   virtual bool isAlive() const = 0;
   virtual void setLife(bool state) = 0;
   virtual ~Actor(){}

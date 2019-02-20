@@ -1,5 +1,6 @@
 #include "Actor.h"
-#include "StudentWorld.h" // Needed for collision function
+#include "StudentWorld.h" // Needed for collision and key function
+#include "GameConstants.h"
 
 // Students:  Add code to this file, Actor.h, StudentWorld.h, and StudentWorld.cpp
 ///// BASE
@@ -11,7 +12,7 @@ bool Actor::isMortal() const
 {
   return m_mort;
 }
-bool Actor::getWorld() const
+StudentWorld* Actor::getWorld() const
 {
   return m_wld;
 }
@@ -50,5 +51,63 @@ Penelope::Penelope(int imageID, int col, int row, Direction stDir, int depth, St
 // {std::cerr << "Penelope at " << getX() << "," <<getY() << " rip." << std::endl;}
 void Penelope::doSomething()
 {
+  StudentWorld* world = getWorld();
+  int key = (*world).fetchKey();
+  switch(key){
+    case KEY_PRESS_UP:
+    {
+      setDirection(up);
+      int x = getX(); int y = getY() + 4;
+      if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
+        return;
+      if((*world).checkColl(x, y)){
+        std::cerr << "Coll" << std::endl;
+        return;
+      }
+      moveTo(x, y);
+      break;
+    }
+    case KEY_PRESS_RIGHT:
+    {
+      setDirection(right);
+      int x = getX() + 4; int y = getY();
+      if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
+        return;
+      if((*world).checkColl(x, y)){
+        std::cerr << "I'm at: " << getX() << "," << getY() << std::endl;
+        return;
+      }
+      moveTo(x, y);
+      break;
+    }
+    case KEY_PRESS_DOWN:
+    {
+      setDirection(down);
+      int x = getX(); int y = getY() - 4;
+      if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
+        return;
+      if((*world).checkColl(x, y)){
+        std::cerr << "Coll" << std::endl;
+        return;
+      }
+      moveTo(x, y);
+      break;
+    }
+    case KEY_PRESS_LEFT:
+    {
+      setDirection(left);
+      int x = getX() - 4; int y = getY();
+      if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
+        return;
+      if((*world).checkColl(x, y)){
+        std::cerr << "Coll" << std::endl;
+        return;
+      }
+      moveTo(x, y);
+      break;
+    }
+    default:
+      break;
+  }
   return;
 }
