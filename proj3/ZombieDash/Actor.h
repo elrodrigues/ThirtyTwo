@@ -8,30 +8,34 @@ class Actor : public GraphObject
 {
 public:
   Actor(int imageID, int col, int row, Direction stDir, int depth);
-  virtual void doSomething(); /// Implement! Ignored by Fixed
+  virtual void doSomething() = 0;
+
 };
-//// FIXED MEMBERS
+//// WALL, PIT AND EXIT HERE
 class Wall : public Actor
 {
 public:
   Wall(int imageID, int col, int row, Direction stDir, int depth);
+  virtual void doSomething();
 };
 
 //// MORTAL MEMBERS
-class Mortal : public Actor
+class Mortal : public Actor // Adds functions for "mortal" objects
 {
 public:
   Mortal(int imageID, int col, int row, Direction stDir, int depth);
-  virtual bool isAlive();
+  virtual void doSomething() = 0;
+  virtual bool isAlive() const;
   virtual void setLife(bool state);
 private:
-  bool m_life = true;
+  bool m_life; // set true
 }; // Class for everything else.
 
 class Penelope : public Mortal
 {
 public:
   Penelope(int imageID, int col, int row, Direction stDir, int depth);
+  virtual void doSomething();
 private:
   int m_inftick; // If 500, Penelope dies
   bool m_infected;
