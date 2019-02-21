@@ -12,9 +12,11 @@ public:
   virtual void doSomething() = 0;
   virtual bool isMortal() const;
   StudentWorld* getWorld() const;
+  virtual ~Actor(){}
+  //// Additionals below
   virtual bool isAlive() const = 0;
   virtual void setLife(bool state) = 0;
-  virtual ~Actor(){}
+  virtual int getInfRate() const {return -1;}
 private:
   bool m_mort;
   StudentWorld* m_wld;
@@ -45,6 +47,7 @@ public:
   virtual void doSomething() = 0;
   virtual bool isAlive() const;
   virtual void setLife(bool state);
+  // Additional
 private:
   bool m_life; // set true
 }; // Class for everything else.
@@ -54,6 +57,7 @@ class Penelope : public Mortal
 public:
   Penelope(int imageID, int col, int row, Direction stDir, int depth, StudentWorld* wld);
   virtual void doSomething();
+  virtual int getInfRate() const;
   virtual ~Penelope(){}
 private:
   int m_inftick; // If 500, Penelope dies

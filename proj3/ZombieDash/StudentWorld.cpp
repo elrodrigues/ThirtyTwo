@@ -19,9 +19,7 @@ StudentWorld::StudentWorld(string assetPath)
 }
 StudentWorld::~StudentWorld()
 {
-	for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
-			delete *p;
-	m_contain.erase(m_contain.begin(), m_contain.end());
+	cleanUp();
 }
 int StudentWorld::init()
 {
@@ -61,12 +59,27 @@ int StudentWorld::init()
 	}
 	return GWSTATUS_CONTINUE_GAME;
 }
-
+string statScore(const int sc)
+{
+	ostringstream o;
+	int c = 0;
+	int n = sc;
+	while(n != 0)
+	{
+		++c;
+		n = n/10;
+	}
+	for(int i = 0; i < 7 - c; i++)
+		o << "0";
+	if(c > 0)
+		o << sc;
+	return o.str();
+}
 int StudentWorld::move()
 {
     // This code is here merely to allow the game to build, run, and terminate after you hit enter.
     // Notice that the return value GWSTATUS_PLAYER_DIED will cause our framework to end the current level.
-		//// CHECK ACTORS ARE ALIVE
+		//// MAKE ACTORS DO SOMETHING
 		m_key = -1;
 		getKey(m_key);
 
@@ -80,12 +93,14 @@ int StudentWorld::move()
 			decLives();
 			return GWSTATUS_PLAYER_DIED;
 		}
-		// Makeshift escape
-		int key = 0;
-		if(m_key == KEY_PRESS_TAB)
-		{
-			(*m_player)->setLife(false);
-		}
+		//// REMOVE DEAD ACTORS
+
+		//// PRINT STATS
+		ostringstream oss;
+		oss << "Score: " << statScore(getScore()) << "  Level:  " << getLevel() << "  Lives: "
+		<< getLives() << "  Vacc:  " << 0 << "  Flames:  " << 0 << "  Mines:  " << 0
+		<< "  Infected: " << (*m_player)->getInfRate();
+		setGameStatText(oss.str());
 		return GWSTATUS_CONTINUE_GAME;
 }
 
@@ -103,16 +118,17 @@ int StudentWorld::fetchKey() const
 
 bool StudentWorld::checkColl(const int& col, const int& row)
 {
-	// int Lcol = col + (SPRITE_WIDTH - 1); int Lrow = row + (SPRITE_HEIGHT - 1);
 	for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
 	{
-		// int mx = (*p)->getX(); int my = (*p)->getY();
-		// int Lx = mx + (SPRITE_WIDTH - 1); int Ly = my + (SPRITE_HEIGHT - 1);
-		int dx = (*p)->getX() - col; int dy = (*p)->getY() - row;
-		if(p != m_player && (dx*dx) + (dy*dy) <= 256) // FIX!!!
+		double dx = (*p)->getX() - col; double dy = (*p)->getY() - row;
+		dx = (dx >= 0 ? dx/16 : (-dx)/16);
+		dy = (dy >= 0 ? dy/16 : (-dy)/16);
+		double diff = (dx > dy ? dx : dy); // Square metric
+		if(p != m_player && diff < 1)
 		{
-			cerr << (*p)->getX() << "," << (*p)->getY() << " and "
-			<< col << "," << row << endl;
+			// cerr << "Pos: " << (*p)->getX() << "," << (*p)->getY() << endl;
+			// cerr << "Dest: " << col << "," << row << endl;
+			// cerr << "diff: " << diff << endl;
 			return true;
 		}
 	}

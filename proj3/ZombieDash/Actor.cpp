@@ -47,8 +47,11 @@ void Mortal::setLife(bool state)
 Penelope::Penelope(int imageID, int col, int row, Direction stDir, int depth, StudentWorld* wld)
 : Mortal(imageID, col, row, stDir, depth, wld), m_inftick(0), m_infected(false)
 {}
-// Penelope::~Penelope()
-// {std::cerr << "Penelope at " << getX() << "," <<getY() << " rip." << std::endl;}
+int Penelope::getInfRate() const
+{
+  return m_inftick;
+}
+
 void Penelope::doSomething()
 {
   StudentWorld* world = getWorld();
@@ -60,10 +63,8 @@ void Penelope::doSomething()
       int x = getX(); int y = getY() + 4;
       if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
         return;
-      if((*world).checkColl(x, y)){
-        std::cerr << "Coll" << std::endl;
+      if((*world).checkColl(x, y))
         return;
-      }
       moveTo(x, y);
       break;
     }
@@ -73,10 +74,8 @@ void Penelope::doSomething()
       int x = getX() + 4; int y = getY();
       if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
         return;
-      if((*world).checkColl(x, y)){
-        std::cerr << "I'm at: " << getX() << "," << getY() << std::endl;
+      if((*world).checkColl(x, y))
         return;
-      }
       moveTo(x, y);
       break;
     }
@@ -86,10 +85,8 @@ void Penelope::doSomething()
       int x = getX(); int y = getY() - 4;
       if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
         return;
-      if((*world).checkColl(x, y)){
-        std::cerr << "Coll" << std::endl;
+      if((*world).checkColl(x, y))
         return;
-      }
       moveTo(x, y);
       break;
     }
@@ -99,10 +96,8 @@ void Penelope::doSomething()
       int x = getX() - 4; int y = getY();
       if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
         return;
-      if((*world).checkColl(x, y)){
-        std::cerr << "Coll" << std::endl;
+      if((*world).checkColl(x, y))
         return;
-      }
       moveTo(x, y);
       break;
     }
