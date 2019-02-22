@@ -15,14 +15,14 @@ public:
     virtual int init();
     virtual int move();
     virtual void cleanUp();
-    virtual ~StudentWorld();
-    virtual int fetchKey() const;
-    virtual bool checkColl(const int& col, const int& row);
+    virtual ~StudentWorld(); // Just calls cleanUp() for now
+    virtual int fetchKey() const; // Grabs private pressed key for Penelope
+    virtual bool checkColl(const int& col, const int& row); // Checks collision between actors
 
 private:
-    std::list<Actor*> m_contain;
-    std::list<Actor*>::iterator m_player;
-    int m_key;
+    std::list<Actor*> m_contain; // The Container for actors
+    std::list<Actor*>::iterator m_player; // Iterator that points to player in Container
+    int m_key; // Temporary storage of pressed key. Pretty handy.
 };
 
 #endif // STUDENTWORLD_H_

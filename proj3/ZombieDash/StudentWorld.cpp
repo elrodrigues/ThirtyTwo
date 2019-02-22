@@ -14,27 +14,27 @@ GameWorld* createStudentWorld(string assetPath)
 // Students:  Add code to this file, StudentWorld.h, Actor.h and Actor.cpp
 
 StudentWorld::StudentWorld(string assetPath)
-: GameWorld(assetPath), m_key(-1)
+: GameWorld(assetPath), m_key(-1) // Initialize m_key to -1.
 {
 }
 StudentWorld::~StudentWorld()
 {
-	cleanUp();
+	cleanUp(); // Just call cleanUp() for now.
 }
 int StudentWorld::init()
 {
 	Level lev(assetPath());
-	ostringstream oss;
+	ostringstream oss; // My first try at stringstream. Left it in.
 	int lvl = getLevel();
 	if(lvl < 10)
 		oss << "level0" << getLevel() << ".txt";
 	else
 		oss << "level" << getLevel() << ".txt";
 	string levelFile = oss.str();
-
+	// Level loading below taken from spec.
 	Level::LoadResult result = lev.loadLevel(levelFile);
 	if (result == Level::load_fail_file_not_found)
-		cerr<< "Cannot find level01.txt data file" << endl;
+		cerr<< "Cannot find " << levelFile << " data file" << endl;
 	else if (result == Level::load_fail_bad_format)
 		cerr<< "Your level was improperly formatted" << endl;
 
@@ -49,17 +49,17 @@ int StudentWorld::init()
 				switch(ge){
 					case Level::wall:
 						m_contain.push_front(new Wall(IID_WALL, SPRITE_WIDTH*i, SPRITE_HEIGHT*j, GraphObject::right, 0, this));
-						break;
+						break; // Note: 'this' pointer in parameters above get sent to Actor's m_wld
 					case Level::player:
 						m_contain.push_front(new Penelope(IID_PLAYER, SPRITE_WIDTH*i, SPRITE_HEIGHT*j, GraphObject::right, 0, this));
-						m_player = m_contain.begin();
+						m_player = m_contain.begin(); // Set iterator to point to player
 						break;
 				}
 			}
 	}
-	return GWSTATUS_CONTINUE_GAME;
+	return GWSTATUS_CONTINUE_GAME; // Continue game
 }
-string statScore(const int sc)
+string statScore(const int sc) // Wrote this for score display.
 {
 	ostringstream o;
 	int c = 0;
@@ -81,25 +81,25 @@ int StudentWorld::move()
     // Notice that the return value GWSTATUS_PLAYER_DIED will cause our framework to end the current level.
 		//// MAKE ACTORS DO SOMETHING
 		m_key = -1;
-		getKey(m_key);
+		getKey(m_key); // Sets m_key to current key pressed. Useful later
 
 		for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
 		{
-			if(!(*p)->isMortal() || (*p)->isAlive())
+			if(!(*p)->isMortal() || (*p)->isAlive()) // THIS WILL CHANGE
 				(*p)->doSomething();
 		}
-		if(!(*m_player)->isAlive())
+		if(!(*m_player)->isAlive()) // Mortal's isAlive() func used
 		{
 			decLives();
-			return GWSTATUS_PLAYER_DIED;
+			return GWSTATUS_PLAYER_DIED; // Player died, end game
 		}
 		//// REMOVE DEAD ACTORS
-
+		// To Be Implemented!
 		//// PRINT STATS
 		ostringstream oss;
 		oss << "Score: " << statScore(getScore()) << "  Level:  " << getLevel() << "  Lives: "
 		<< getLives() << "  Vacc:  " << 0 << "  Flames:  " << 0 << "  Mines:  " << 0
-		<< "  Infected: " << (*m_player)->getInfRate();
+		<< "  Infected: " << (*m_player)->getInfProg();
 		setGameStatText(oss.str());
 		return GWSTATUS_CONTINUE_GAME;
 }
@@ -107,8 +107,8 @@ int StudentWorld::move()
 void StudentWorld::cleanUp()
 {
 	for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
-			delete *p;
-	m_contain.erase(m_contain.begin(), m_contain.end());
+			delete *p; // Delete all dynamically-allocated actors
+	m_contain.erase(m_contain.begin(), m_contain.end()); // Remove hanging ptrs
 }
 
 int StudentWorld::fetchKey() const
@@ -119,18 +119,18 @@ int StudentWorld::fetchKey() const
 bool StudentWorld::checkColl(const int& col, const int& row)
 {
 	for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
-	{
+	{ // Checks for each actor in container
 		double dx = (*p)->getX() - col; double dy = (*p)->getY() - row;
-		dx = (dx >= 0 ? dx/16 : (-dx)/16);
+		dx = (dx >= 0 ? dx/16 : (-dx)/16); // Absolute Value
 		dy = (dy >= 0 ? dy/16 : (-dy)/16);
-		double diff = (dx > dy ? dx : dy); // Square metric
+		double diff = (dx > dy ? dx : dy); // Square Metric to determine collision
 		if(p != m_player && diff < 1)
 		{
 			// cerr << "Pos: " << (*p)->getX() << "," << (*p)->getY() << endl;
 			// cerr << "Dest: " << col << "," << row << endl;
 			// cerr << "diff: " << diff << endl;
-			return true;
+			return true; // BOXES INTERSECT
 		}
 	}
-	return false;
+	return false; // ALL BOXES DONT INTERSECT
 }

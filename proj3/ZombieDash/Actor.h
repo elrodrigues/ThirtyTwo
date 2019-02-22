@@ -4,22 +4,23 @@
 #include "GraphObject.h"
 
 // Students:  Add code to this file, Actor.cpp, StudentWorld.h, and StudentWorld.cpp
-class StudentWorld;
+class StudentWorld; // Prototype for pointer declaration below
+//// DRAFT CLASS STRUCTURE: () Actor -> (1) Fixed, (2) Mortal -> (1a) Wall, (2a) Penelope
 class Actor : public GraphObject
 {
 public:
   Actor(int imageID, int col, int row, Direction stDir, int depth, StudentWorld* wld, bool mort);
   virtual void doSomething() = 0;
-  virtual bool isMortal() const;
-  StudentWorld* getWorld() const;
-  virtual ~Actor(){}
+  virtual bool isMortal() const; // Identifies Fixed and Mortal objects
+  StudentWorld* getWorld() const; // Access to StudentWorld
+  virtual ~Actor(){} // Destructor does nothing
   //// Additionals below
-  virtual bool isAlive() const = 0;
+  virtual bool isAlive() const = 0; // Needed to call functions in Mortal class
   virtual void setLife(bool state) = 0;
-  virtual int getInfRate() const {return -1;}
+  virtual int getInfProg() const {return -1;} // Needed to use func in Penelope class
 private:
-  bool m_mort;
-  StudentWorld* m_wld;
+  bool m_mort; // Is object Fixed or Mortal
+  StudentWorld* m_wld; // Pointer to current StudentWorld
 };
 //// FIXED
 class Fixed : public Actor // Collection of mort = false
@@ -45,11 +46,10 @@ class Mortal : public Actor // Collection of mort = true
 public:
   Mortal(int imageID, int col, int row, Direction stDir, int depth, StudentWorld* wld);
   virtual void doSomething() = 0;
-  virtual bool isAlive() const;
-  virtual void setLife(bool state);
-  // Additional
+  virtual bool isAlive() const; // Checks if object "alive" (includes goodies, flames etc)
+  virtual void setLife(bool state); // Change m_life, used by StudentWorld
 private:
-  bool m_life; // set true
+  bool m_life; // set true on construction
 }; // Class for everything else.
 
 class Penelope : public Mortal
@@ -57,11 +57,11 @@ class Penelope : public Mortal
 public:
   Penelope(int imageID, int col, int row, Direction stDir, int depth, StudentWorld* wld);
   virtual void doSomething();
-  virtual int getInfRate() const;
-  virtual ~Penelope(){}
+  virtual int getInfProg() const; // Get infection progress, used by World
+  virtual ~Penelope(){} // Destructor does nothing for now
 private:
   int m_inftick; // If 500, Penelope dies
-  bool m_infected;
+  bool m_infected; // Is infected or not. Not needed but nice to have.
 };
 
 #endif // ACTOR_H_
