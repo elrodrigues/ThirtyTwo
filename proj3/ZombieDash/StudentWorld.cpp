@@ -174,7 +174,21 @@ void StudentWorld::activateOnAppropriateActors(Actor* a)
 	for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
 	{
 		double dx = (*p)->getX() - x_a; double dy = (*p)->getY() - y_a;
-		if((dx * dx) + (dy * dy) <= 100)
+		if((*p) != a && (dx * dx) + (dy * dy) <= 100)
 			a->activateIfAppropriate(*p);
 	}
+}
+
+bool StudentWorld::isFlameBlockedAt(double x, double y)
+{
+	for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
+	{
+		if ((*p)->blocksFlame())
+		{
+			double dx = (*p)->getX() - x; double dy = (*p)->getY() - y;
+			if ((dx * dx) + (dy * dy) <= 100)
+				return true;
+		}
+	}
+	return false;
 }

@@ -136,15 +136,22 @@ bool Pit::isPit() const
 }
 //// FLAME
 Flame::Flame(StudentWorld* w, double x, double y, int dir)
-: ActivatingObject(w, IID_FLAME, x, y, dir, 0)
+: ActivatingObject(w, IID_FLAME, x, y, dir, 0), m_flametick(0)
 {}
 void Flame::doSomething()
 {
-  return;
+	if (m_flametick < 3)
+	{
+		m_flametick++;
+		world()->activateOnAppropriateActors(this);
+	}
+	setDead();
+	return;
 }
 void Flame::activateIfAppropriate(Actor* a)
 {
-  return;
+  if(!a->blocksFlame())
+    a->dieByFallOrBurnIfAppropriate();
 }
 //// VOMIT
 Vomit::Vomit(StudentWorld* w, double x, double y, int dir)
@@ -160,22 +167,34 @@ void Vomit::activateIfAppropriate(Actor* a)
 }
 //// LANDMINES
 Landmine::Landmine(StudentWorld* w, double x, double y)
-: ActivatingObject(w, IID_LANDMINE, x, y, right, 1), m_safetick(0)
+: ActivatingObject(w, IID_LANDMINE, x, y, right, 1), m_safetick(30)
 {}
 void Landmine::doSomething()
 {
-  if(m_safetick <= 30)
+  if(m_safetick >= 0)
   {
-    m_safetick++;
+    m_safetick--;
     return;
   }
   world()->activateOnAppropriateActors(this);
 }
 void Landmine::activateIfAppropriate(Actor* a)
 {
-  if(a->ptr() != nullptr) //// WILL BE CHANGED`
+  if(!a->blocksFlame()) //// WILL BE CHANGED`
   {
-    std::cerr << "Boom" << std::endl;
+	  double x = getX();
+	  double y = getY();
+	  for (int j = -1; j < 2; j++)
+	  {
+		  for (int i = -1; i < 2; i++)
+		  {
+			  if (world()->isFlameBlockedAt(x + SPRITE_HEIGHT * i, y + SPRITE_WIDTH * j))
+				  world()->addActor(new Flame(world(), x + SPRITE_HEIGHT * i, y + SPRITE_WIDTH * j, right));
+			  else
+				  std::cerr << "Boop" << std::endl;
+		  }
+	  }
+		  
     setDead();
   }
 }
@@ -195,7 +214,7 @@ void Goodie::activateIfAppropriate(Actor* a)
 }
 void Goodie::dieByFallOrBurnIfAppropriate()
 {
-  return;
+  setDead();
 }
 //// VaccineGoodie
 VaccineGoodie::VaccineGoodie(StudentWorld* w, double x, double y)
@@ -333,6 +352,41 @@ void Penelope::doSomething()
           world()->addActor(new Landmine(world(), getX(), getY()));
           m_land--;
       }
+	  break;
+    }
+    case KEY_PRESS_SPACE:
+    {
+	  if(getNumFlameCharges() > 0)
+      {
+		m_flame--;
+		int dir = getDirection();
+        double x = getX();
+        double y = getY();
+        world()->playSound(SOUND_PLAYER_FIRE);
+        for(int i = 1; i < 4; i++)
+        {
+          switch(dir){
+            case up:
+              if(!world()->isFlameBlockedAt(x, y + SPRITE_WIDTH*i))
+                world()->addActor(new Flame(world(), x, y + SPRITE_WIDTH*i, up));
+              break;
+            case down:
+              if(!world()->isFlameBlockedAt(x, y - SPRITE_WIDTH*i))
+                world()->addActor(new Flame(world(), x, y - SPRITE_WIDTH*i, down));
+              break;
+            case left:
+              if(!world()->isFlameBlockedAt(x - SPRITE_HEIGHT*i, y))
+                world()->addActor(new Flame(world(), x - SPRITE_HEIGHT*i, y, left));
+              break;
+            case right:
+              if(!world()->isFlameBlockedAt(x + SPRITE_HEIGHT*i, y))
+                world()->addActor(new Flame(world(), x + SPRITE_HEIGHT*i, y, right));
+              break;
+            default:
+              break;
+          }
+        }
+      }
     }
     default:
       break;
@@ -392,7 +446,8 @@ void Citizen::doSomething()
 }
 void Citizen::dieByFallOrBurnIfAppropriate()
 {
-  return;
+  world()->playSound(SOUND_CITIZEN_DIE);
+  setDead();
 }
 void Citizen::useExitIfAppropriate()
 {

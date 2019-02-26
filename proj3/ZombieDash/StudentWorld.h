@@ -47,7 +47,7 @@ public:
     bool isAgentMovementBlockedAt(double row, double col);
 
       // Is creation of a flame blocked at the indicated location?
-    bool isFlameBlockedAt(double x, double y) const {return false;}
+    bool isFlameBlockedAt(double x, double y);
 
       // Is there something at the indicated location that might cause a
       // zombie to vomit (i.e., a human)?
