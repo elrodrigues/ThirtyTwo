@@ -14,7 +14,7 @@ GameWorld* createStudentWorld(string assetPath)
 // Students:  Add code to this file, StudentWorld.h, Actor.h and Actor.cpp
 
 StudentWorld::StudentWorld(string assetDir)
-: GameWorld(assetDir), m_key(-1) // Initialize m_key to -1.
+: GameWorld(assetDir), m_key(-1), m_fin(false) // Initialize m_key to -1.
 {
 }
 StudentWorld::~StudentWorld()
@@ -25,8 +25,13 @@ void StudentWorld::addActor(Actor* a)
 {
 	m_contain.push_front(a);
 }
+void StudentWorld::recordLevelFinishedIfAllCitizensGone()
+{
+	m_fin = true;
+}
 int StudentWorld::init()
 {
+	m_fin = false;
 	Level lev(assetPath());
 	ostringstream oss; // My first try at stringstream. Left it in.
 	int lvl = getLevel();
@@ -38,7 +43,7 @@ int StudentWorld::init()
 	// Level loading below taken from spec.
 	Level::LoadResult result = lev.loadLevel(levelFile);
 	if (result == Level::load_fail_file_not_found)
-		cerr<< "Cannot find " << levelFile << " data file" << endl;
+		return GWSTATUS_PLAYER_WON;
 	else if (result == Level::load_fail_bad_format)
 		cerr<< "Your level was improperly formatted" << endl;
 
@@ -61,6 +66,18 @@ int StudentWorld::init()
 					case Level::exit:
 						addActor(new Exit(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
 						break;
+					case Level::vaccine_goodie:
+						addActor(new VaccineGoodie(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
+						break;
+					case Level::gas_can_goodie:
+						addActor(new GasCanGoodie(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
+						break;
+					case Level::landmine_goodie:
+						addActor(new LandmineGoodie(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
+						break;
+					case Level::citizen:
+						addActor(new Citizen(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
+						break;
 				}
 			}
 	}
@@ -82,17 +99,25 @@ string statScore(const int sc) // Wrote this for score display.
 		o << sc;
 	return o.str();
 }
+
 int StudentWorld::move()
 {
     // This code is here merely to allow the game to build, run, and terminate after you hit enter.
     // Notice that the return value GWSTATUS_PLAYER_DIED will cause our framework to end the current level.
 		//// MAKE ACTORS DO SOMETHING
+		if(m_fin)
+			return GWSTATUS_FINISHED_LEVEL;
 		m_key = -1;
 		getKey(m_key); // Sets m_key to current key pressed. Useful later
 
 		for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
 		{
 				(*p)->doSomething();
+				if(p != m_player && (*p)->isDead() && !(*p)->blocksFlame() && !(*p)->isPit())
+				{
+						delete *p;
+						p = m_contain.erase(p);
+				}
 		}
 		if((*m_player)->ptr()->isDead()) // Mortal's isAlive() func used
 		{
@@ -100,12 +125,12 @@ int StudentWorld::move()
 			return GWSTATUS_PLAYER_DIED; // Player died, end game
 		}
 		//// REMOVE DEAD ACTORS
-		// To Be Implemented!
 		//// PRINT STATS
 		ostringstream oss;
 		oss << "Score: " << statScore(getScore()) << "  Level:  " << getLevel() << "  Lives: "
-		<< getLives() << "  Vacc:  " << 0 << "  Flames:  " << 0 << "  Mines:  " << 0
-		<< "  Infected: " << (*m_player)->ptr()->getInfectionDuration();
+		<< getLives() << "  Vacc:  " << (*m_player)->ptr()->getNumVaccines() << "  Flames:  " <<
+		(*m_player)->ptr()->getNumFlameCharges() <<	"  Mines:  " << (*m_player)->ptr()->getNumLandmines()	<<
+		"  Infected: " << (*m_player)->ptr()->getInfectionDuration();
 		setGameStatText(oss.str());
 		return GWSTATUS_CONTINUE_GAME;
 }
@@ -138,4 +163,16 @@ bool StudentWorld::isAgentMovementBlockedAt(double col, double row)
 		}
 	}
 	return false; // ALL BOXES DONT INTERSECT
+}
+
+void StudentWorld::activateOnAppropriateActors(Actor* a)
+{
+	double x_a = a->getX();
+	double y_a = a->getY();
+	for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
+	{
+		double dx = (*p)->getX() - x_a; double dy = (*p)->getY() - y_a;
+		if((dx * dx) + (dy * dy) <= 100)
+			a->activateIfAppropriate(*p);
+	}
 }

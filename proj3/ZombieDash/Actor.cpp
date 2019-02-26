@@ -69,6 +69,10 @@ Penelope* Actor::ptr()
 {
   return nullptr;
 }
+bool Actor::isPit() const
+{
+  return false;
+}
 ////  WALL
 Wall::Wall(StudentWorld* w, double x, double y)
 : Actor(w, IID_WALL, x, y, right, 0)
@@ -99,11 +103,14 @@ Exit::Exit(StudentWorld* w, double x, double y)
 }
 void Exit::doSomething()
 {
-  return;
+  world()->activateOnAppropriateActors(this);
 }
 void Exit::activateIfAppropriate(Actor* a)
 {
-  return;
+  if(a->triggersZombieVomit())
+  {
+      a->useExitIfAppropriate();
+  }
 }
 bool Exit::blocksFlame() const
 {
@@ -122,6 +129,10 @@ void Pit::doSomething()
 void Pit::activateIfAppropriate(Actor* a)
 {
   return;
+}
+bool Pit::isPit() const
+{
+  return true;
 }
 //// FLAME
 Flame::Flame(StudentWorld* w, double x, double y, int dir)
@@ -170,7 +181,8 @@ Goodie::Goodie(StudentWorld* w, int imageID, double x, double y)
 {}
 void Goodie::activateIfAppropriate(Actor* a)
 {
-  return;
+  if(a->ptr() != nullptr)
+    a->pickUpGoodieIfAppropriate(this);
 }
 void Goodie::dieByFallOrBurnIfAppropriate()
 {
@@ -182,11 +194,15 @@ VaccineGoodie::VaccineGoodie(StudentWorld* w, double x, double y)
 {}
 void VaccineGoodie::doSomething()
 {
-  return;
+  if(!isDead())
+    world()->activateOnAppropriateActors(this);
 }
 void VaccineGoodie::pickUp(Penelope* p)
 {
-  return;
+  p->increaseVaccines();
+  world()->playSound(SOUND_GOT_GOODIE);
+  world()->increaseScore(50);
+  setDead();
 }
 //// GasCanGoodie
 GasCanGoodie::GasCanGoodie(StudentWorld* w, double x, double y)
@@ -250,6 +266,8 @@ Penelope::Penelope(StudentWorld* w, double x, double y)
 {}
 void Penelope::doSomething()
 {
+  if(isDead())
+    return;
   StudentWorld* wld = world();
   int key = (*wld).fetchKey(); // StudentWorld Func to fetch (not get) pressed key.
   switch(key){ // Probably a better way to handle this
@@ -304,7 +322,8 @@ void Penelope::doSomething()
 }
 void Penelope::useExitIfAppropriate() // Common Function
 {
-  return;
+  world()->recordLevelFinishedIfAllCitizensGone();
+  world()->playSound(SOUND_LEVEL_FINISHED);
 }
 void Penelope::dieByFallOrBurnIfAppropriate()
 {
@@ -312,7 +331,7 @@ void Penelope::dieByFallOrBurnIfAppropriate()
 }
 void Penelope::pickUpGoodieIfAppropriate(Goodie* g)
 {
-  return;
+  g->pickUp(this);
 }
 void Penelope::increaseVaccines()
 {

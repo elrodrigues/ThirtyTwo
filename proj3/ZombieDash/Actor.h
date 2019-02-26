@@ -66,6 +66,7 @@ public:
     virtual bool triggersCitizens() const;
 
     virtual Penelope* ptr();
+    virtual bool isPit() const;
 
 private:
     bool m_life;
@@ -102,6 +103,7 @@ public:
     Pit(StudentWorld* w, double x, double y);
     virtual void doSomething();
     virtual void activateIfAppropriate(Actor* a);
+    virtual bool isPit() const;
 };
 
 class Flame : public ActivatingObject

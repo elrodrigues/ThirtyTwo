@@ -38,10 +38,10 @@ public:
 
       // Indicate that the player has finished the level if all citizens
       // are gone.
-    void recordLevelFinishedIfAllCitizensGone(){}
+    void recordLevelFinishedIfAllCitizensGone();
 
       // For each actor overlapping a, activate a if appropriate.
-    void activateOnAppropriateActors(Actor* a){}
+    void activateOnAppropriateActors(Actor* a);
 
       // Is an agent blocked from moving to the indicated location?
     bool isAgentMovementBlockedAt(double row, double col);
@@ -73,6 +73,7 @@ private:
   std::list<Actor*> m_contain; // The Container for actors
   std::list<Actor*>::iterator m_player; // Iterator that points to player in Container
   int m_key; // Temporary storage of pressed key. Pretty handy.
+  bool m_fin;
 };
 
 #endif // STUDENTWORLD_INCLUDED
