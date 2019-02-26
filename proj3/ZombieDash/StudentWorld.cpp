@@ -128,7 +128,7 @@ int StudentWorld::move()
 		//// PRINT STATS
 		ostringstream oss;
 		oss << "Score: " << statScore(getScore()) << "  Level:  " << getLevel() << "  Lives: "
-		<< getLives() << "  Vacc:  " << (*m_player)->ptr()->getNumVaccines() << "  Flames:  " <<
+		<< getLives() << "  Vacc:  " << (*m_player)->ptr()->getNumVaccines() << "  Flames: " <<
 		(*m_player)->ptr()->getNumFlameCharges() <<	"  Mines:  " << (*m_player)->ptr()->getNumLandmines()	<<
 		"  Infected: " << (*m_player)->ptr()->getInfectionDuration();
 		setGameStatText(oss.str());

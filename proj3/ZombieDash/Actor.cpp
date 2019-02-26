@@ -200,8 +200,6 @@ void VaccineGoodie::doSomething()
 void VaccineGoodie::pickUp(Penelope* p)
 {
   p->increaseVaccines();
-  world()->playSound(SOUND_GOT_GOODIE);
-  world()->increaseScore(50);
   setDead();
 }
 //// GasCanGoodie
@@ -210,11 +208,13 @@ GasCanGoodie::GasCanGoodie(StudentWorld* w, double x, double y)
 {}
 void GasCanGoodie::doSomething()
 {
-  return;
+  if(!isDead())
+    world()->activateOnAppropriateActors(this);
 }
 void GasCanGoodie::pickUp(Penelope* p)
 {
-  return;
+  p->increaseFlameCharges();
+  setDead();
 }
 //// LandmineGoodie
 LandmineGoodie::LandmineGoodie(StudentWorld* w, double x, double y)
@@ -222,11 +222,13 @@ LandmineGoodie::LandmineGoodie(StudentWorld* w, double x, double y)
 {}
 void LandmineGoodie::doSomething()
 {
-  return;
+  if(!isDead())
+    world()->activateOnAppropriateActors(this);
 }
 void LandmineGoodie::pickUp(Penelope* p)
 {
-  return;
+  p->increaseLandmines();
+  setDead();
 }
 //// Agent
 Agent::Agent(StudentWorld* w, int imageID, double x, double y, int dir)
@@ -331,6 +333,8 @@ void Penelope::dieByFallOrBurnIfAppropriate()
 }
 void Penelope::pickUpGoodieIfAppropriate(Goodie* g)
 {
+  world()->playSound(SOUND_GOT_GOODIE);
+  world()->increaseScore(50);
   g->pickUp(this);
 }
 void Penelope::increaseVaccines()
