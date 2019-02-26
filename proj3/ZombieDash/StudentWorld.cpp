@@ -78,6 +78,8 @@ int StudentWorld::init()
 					case Level::citizen:
 						addActor(new Citizen(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
 						break;
+					default:
+						break;
 				}
 			}
 	}
