@@ -285,7 +285,7 @@ void Penelope::doSomething()
     case KEY_PRESS_UP:
     {
       setDirection(up); // Set direction regardless of collision
-      int x = getX(); int y = getY() + 4;
+      double x = getX(); double y = getY() + 4;
       if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT) // Just in case
         return;
       if((*wld).isAgentMovementBlockedAt(x, y)) // This function checks for collision, in StudentWorld
@@ -296,7 +296,7 @@ void Penelope::doSomething()
     case KEY_PRESS_RIGHT:
     {
       setDirection(right);
-      int x = getX() + 4; int y = getY();
+      double x = getX() + 4; double y = getY();
       if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
         return;
       if((*wld).isAgentMovementBlockedAt(x, y))
@@ -307,7 +307,7 @@ void Penelope::doSomething()
     case KEY_PRESS_DOWN:
     {
       setDirection(down);
-      int x = getX(); int y = getY() - 4;
+      double x = getX(); double y = getY() - 4;
       if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
         return;
       if((*wld).isAgentMovementBlockedAt(x, y))
@@ -318,7 +318,7 @@ void Penelope::doSomething()
     case KEY_PRESS_LEFT:
     {
       setDirection(left);
-      int x = getX() - 4; int y = getY();
+      double x = getX() - 4; double y = getY();
       if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
         return;
       if((*wld).isAgentMovementBlockedAt(x, y))
