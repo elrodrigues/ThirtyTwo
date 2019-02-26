@@ -84,7 +84,7 @@ public:
 class ActivatingObject : public Actor
 {
 public:
-    ActivatingObject(StudentWorld* w, int imageID, double x, double y, int depth, int dir);
+    ActivatingObject(StudentWorld* w, int imageID, double x, double y, int dir, int depth);
 };
 
 class Exit : public ActivatingObject

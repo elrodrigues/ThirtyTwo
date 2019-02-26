@@ -21,6 +21,10 @@ StudentWorld::~StudentWorld()
 {
 	cleanUp(); // Just call cleanUp() for now.
 }
+void StudentWorld::addActor(Actor* a)
+{
+	m_contain.push_front(a);
+}
 int StudentWorld::init()
 {
 	Level lev(assetPath());
@@ -48,11 +52,14 @@ int StudentWorld::init()
 				ge = lev.getContentsOf(i, j);
 				switch(ge){
 					case Level::wall:
-						m_contain.push_front(new Wall(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
+						addActor(new Wall(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
 						break; // Note: 'this' pointer in parameters above get sent to Actor's m_wld
 					case Level::player:
-						m_contain.push_front(new Penelope(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
+						addActor(new Penelope(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
 						m_player = m_contain.begin(); // Set iterator to point to player
+						break;
+					case Level::exit:
+						addActor(new Exit(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
 						break;
 				}
 			}
@@ -123,7 +130,7 @@ bool StudentWorld::checkColl(const int& col, const int& row)
 		dx = (dx >= 0 ? dx/16 : (-dx)/16); // Absolute Value
 		dy = (dy >= 0 ? dy/16 : (-dy)/16);
 		double diff = (dx > dy ? dx : dy); // Square Metric to determine collision
-		if(p != m_player && diff < 1)
+		if(p != m_player && (*p)->blocksMovement() && diff < 1)
 		{
 			// cerr << "Pos: " << (*p)->getX() << "," << (*p)->getY() << endl;
 			// cerr << "Dest: " << col << "," << row << endl;

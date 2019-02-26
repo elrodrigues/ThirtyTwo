@@ -88,12 +88,12 @@ bool Wall::blocksFlame() const
   return true;
 }
 //// ACTIVATINGOBJECT
-ActivatingObject::ActivatingObject(StudentWorld* w, int imageID, double x, double y, int depth, int dir)
-: Actor(w, imageID, x, y, depth, dir)
+ActivatingObject::ActivatingObject(StudentWorld* w, int imageID, double x, double y, int dir, int depth)
+: Actor(w, imageID, x, y, dir, depth)
 {}
 //// EXIT
 Exit::Exit(StudentWorld* w, double x, double y)
-: ActivatingObject(w, IID_EXIT, x, y, 1, right)
+: ActivatingObject(w, IID_EXIT, x, y, right, 1)
 {
   setDead();
 }
@@ -111,7 +111,7 @@ bool Exit::blocksFlame() const
 }
 //// PIT
 Pit::Pit(StudentWorld* w, double x, double y)
-: ActivatingObject(w, IID_PIT, x, y, 0, right)
+: ActivatingObject(w, IID_PIT, x, y, right, 0)
 {
   setDead();
 }
@@ -125,7 +125,7 @@ void Pit::activateIfAppropriate(Actor* a)
 }
 //// FLAME
 Flame::Flame(StudentWorld* w, double x, double y, int dir)
-: ActivatingObject(w, IID_FLAME, x, y, 0, dir)
+: ActivatingObject(w, IID_FLAME, x, y, dir, 0)
 {}
 void Flame::doSomething()
 {
@@ -137,7 +137,7 @@ void Flame::activateIfAppropriate(Actor* a)
 }
 //// VOMIT
 Vomit::Vomit(StudentWorld* w, double x, double y, int dir)
-: ActivatingObject(w, IID_VOMIT, x, y, 0, dir)
+: ActivatingObject(w, IID_VOMIT, x, y, dir, 0)
 {}
 void Vomit::doSomething()
 {
@@ -149,7 +149,7 @@ void Vomit::activateIfAppropriate(Actor* a)
 }
 //// LANDMINES
 Landmine::Landmine(StudentWorld* w, double x, double y)
-: ActivatingObject(w, IID_LANDMINE, x, y, 1, right)
+: ActivatingObject(w, IID_LANDMINE, x, y, right, 1)
 {}
 void Landmine::doSomething()
 {
@@ -166,7 +166,7 @@ void Landmine::dieByFallOrBurnIfAppropriate()
 
 //// GOODIE
 Goodie::Goodie(StudentWorld* w, int imageID, double x, double y)
-: ActivatingObject(w, imageID, x, y, 1, right)
+: ActivatingObject(w, imageID, x, y, right, 1)
 {}
 void Goodie::activateIfAppropriate(Actor* a)
 {
@@ -214,7 +214,7 @@ void LandmineGoodie::pickUp(Penelope* p)
 }
 //// Agent
 Agent::Agent(StudentWorld* w, int imageID, double x, double y, int dir)
-: Actor(w, imageID, x, y, 0, dir)
+: Actor(w, imageID, x, y, dir, 0)
 {}
 bool Agent::blocksMovement() const
 {
