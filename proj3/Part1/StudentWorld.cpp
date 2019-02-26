@@ -13,8 +13,8 @@ GameWorld* createStudentWorld(string assetPath)
 
 // Students:  Add code to this file, StudentWorld.h, Actor.h and Actor.cpp
 
-StudentWorld::StudentWorld(string assetDir)
-: GameWorld(assetDir), m_key(-1) // Initialize m_key to -1.
+StudentWorld::StudentWorld(string assetPath)
+: GameWorld(assetPath), m_key(-1) // Initialize m_key to -1.
 {
 }
 StudentWorld::~StudentWorld()
@@ -48,10 +48,10 @@ int StudentWorld::init()
 				ge = lev.getContentsOf(i, j);
 				switch(ge){
 					case Level::wall:
-						m_contain.push_front(new Wall(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
+						m_contain.push_front(new Wall(IID_WALL, SPRITE_WIDTH*i, SPRITE_HEIGHT*j, GraphObject::right, 0, this));
 						break; // Note: 'this' pointer in parameters above get sent to Actor's m_wld
 					case Level::player:
-						m_contain.push_front(new Penelope(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
+						m_contain.push_front(new Penelope(IID_PLAYER, SPRITE_WIDTH*i, SPRITE_HEIGHT*j, GraphObject::right, 0, this));
 						m_player = m_contain.begin(); // Set iterator to point to player
 						break;
 				}
@@ -85,9 +85,10 @@ int StudentWorld::move()
 
 		for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
 		{
+			if(!(*p)->isMortal() || (*p)->isAlive()) // THIS WILL CHANGE
 				(*p)->doSomething();
 		}
-		if((*m_player)->ptr()->isDead()) // Mortal's isAlive() func used
+		if(!(*m_player)->isAlive()) // Mortal's isAlive() func used
 		{
 			decLives();
 			return GWSTATUS_PLAYER_DIED; // Player died, end game
@@ -98,7 +99,7 @@ int StudentWorld::move()
 		ostringstream oss;
 		oss << "Score: " << statScore(getScore()) << "  Level:  " << getLevel() << "  Lives: "
 		<< getLives() << "  Vacc:  " << 0 << "  Flames:  " << 0 << "  Mines:  " << 0
-		<< "  Infected: " << (*m_player)->ptr()->getInfectionDuration();
+		<< "  Infected: " << (*m_player)->getInfProg();
 		setGameStatText(oss.str());
 		return GWSTATUS_CONTINUE_GAME;
 }
