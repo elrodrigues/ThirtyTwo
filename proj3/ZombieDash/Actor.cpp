@@ -160,15 +160,24 @@ void Vomit::activateIfAppropriate(Actor* a)
 }
 //// LANDMINES
 Landmine::Landmine(StudentWorld* w, double x, double y)
-: ActivatingObject(w, IID_LANDMINE, x, y, right, 1)
+: ActivatingObject(w, IID_LANDMINE, x, y, right, 1), m_safetick(0)
 {}
 void Landmine::doSomething()
 {
-  return;
+  if(m_safetick <= 30)
+  {
+    m_safetick++;
+    return;
+  }
+  world()->activateOnAppropriateActors(this);
 }
 void Landmine::activateIfAppropriate(Actor* a)
 {
-  return;
+  if(a->ptr() != nullptr) //// WILL BE CHANGED`
+  {
+    std::cerr << "Boom" << std::endl;
+    setDead();
+  }
 }
 void Landmine::dieByFallOrBurnIfAppropriate()
 {
@@ -316,6 +325,14 @@ void Penelope::doSomething()
         return;
       moveTo(x, y);
       break;
+    }
+    case KEY_PRESS_TAB:
+    {
+      if(getNumLandmines() > 0)
+      {
+          world()->addActor(new Landmine(world(), getX(), getY()));
+          m_land--;
+      }
     }
     default:
       break;

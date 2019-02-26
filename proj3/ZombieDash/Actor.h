@@ -129,6 +129,8 @@ public:
     virtual void doSomething();
     virtual void activateIfAppropriate(Actor* a);
     virtual void dieByFallOrBurnIfAppropriate();
+private:
+    int m_safetick;
 };
 
 class Goodie : public ActivatingObject
