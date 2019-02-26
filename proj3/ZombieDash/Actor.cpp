@@ -259,7 +259,7 @@ void Penelope::doSomething()
       int x = getX(); int y = getY() + 4;
       if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT) // Just in case
         return;
-      if((*wld).checkColl(x, y)) // This function checks for collision, in StudentWorld
+      if((*wld).isAgentMovementBlockedAt(x, y)) // This function checks for collision, in StudentWorld
         return;
       moveTo(x, y);
       break;
@@ -270,7 +270,7 @@ void Penelope::doSomething()
       int x = getX() + 4; int y = getY();
       if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
         return;
-      if((*wld).checkColl(x, y))
+      if((*wld).isAgentMovementBlockedAt(x, y))
         return;
       moveTo(x, y);
       break;
@@ -281,7 +281,7 @@ void Penelope::doSomething()
       int x = getX(); int y = getY() - 4;
       if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
         return;
-      if((*wld).checkColl(x, y))
+      if((*wld).isAgentMovementBlockedAt(x, y))
         return;
       moveTo(x, y);
       break;
@@ -292,7 +292,7 @@ void Penelope::doSomething()
       int x = getX() - 4; int y = getY();
       if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
         return;
-      if((*wld).checkColl(x, y))
+      if((*wld).isAgentMovementBlockedAt(x, y))
         return;
       moveTo(x, y);
       break;

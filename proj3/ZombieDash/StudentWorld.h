@@ -29,6 +29,8 @@ public:
 
       // Add an actor to the world.
     void addActor(Actor* a);
+    // const std::list<Actor*>::iterator start();
+    // const std::list<Actor*>::iterator end();
 
       // Record that one more citizen on the current level is gone (exited,
       // died, or turned into a zombie).
@@ -42,7 +44,7 @@ public:
     void activateOnAppropriateActors(Actor* a){}
 
       // Is an agent blocked from moving to the indicated location?
-    bool isAgentMovementBlockedAt(double x, double y) const {return false;}
+    bool isAgentMovementBlockedAt(double row, double col);
 
       // Is creation of a flame blocked at the indicated location?
     bool isFlameBlockedAt(double x, double y) const {return false;}
@@ -67,7 +69,6 @@ public:
       // of the one nearest to (x,y).
     bool locateNearestCitizenThreat(double x, double y, double& otherX, double& otherY, double& distance) const {return false;}
     virtual int fetchKey() const; // Grabs private pressed key for Penelope
-    virtual bool checkColl(const int& col, const int& row); // Checks collision between actors
 private:
   std::list<Actor*> m_contain; // The Container for actors
   std::list<Actor*>::iterator m_player; // Iterator that points to player in Container

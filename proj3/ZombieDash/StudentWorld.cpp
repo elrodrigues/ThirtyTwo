@@ -121,8 +121,7 @@ int StudentWorld::fetchKey() const
 {
 	return m_key;
 }
-
-bool StudentWorld::checkColl(const int& col, const int& row)
+bool StudentWorld::isAgentMovementBlockedAt(double col, double row)
 {
 	for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
 	{ // Checks for each actor in container
