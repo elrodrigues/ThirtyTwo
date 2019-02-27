@@ -140,13 +140,13 @@ Flame::Flame(StudentWorld* w, double x, double y, int dir)
 {}
 void Flame::doSomething()
 {
-	if (m_flametick < 3)
-	{
-		m_flametick++;
-		world()->activateOnAppropriateActors(this);
-	}
-	setDead();
-	return;
+	if(isDead())
+    return;
+  world()->activateOnAppropriateActors(this);
+  m_flametick++;
+  if (m_flametick == 2)
+    setDead();
+
 }
 void Flame::activateIfAppropriate(Actor* a)
 {
@@ -184,23 +184,16 @@ void Landmine::activateIfAppropriate(Actor* a)
   {
 	  double x = getX();
 	  double y = getY();
-	  for (int j = -1; j < 2; j++)
-	  {
-		  for (int i = -1; i < 2; i++)
-		  {
-			  if (world()->isFlameBlockedAt(x + SPRITE_HEIGHT * i, y + SPRITE_WIDTH * j))
-				  world()->addActor(new Flame(world(), x + SPRITE_HEIGHT * i, y + SPRITE_WIDTH * j, right));
-			  else
-				  std::cerr << "Boop" << std::endl;
-		  }
-	  }
-		  
+    for(int i = -1; i < 2; i++)
+      for(int j = -1; j < 2; j++)
+        if(!world()->isFlameBlockedAt(x + SPRITE_HEIGHT*j, y + SPRITE_WIDTH*i))
+            world()->addActor(new Flame(world(), x + SPRITE_HEIGHT*i , y + SPRITE_WIDTH*j, right));
     setDead();
   }
 }
 void Landmine::dieByFallOrBurnIfAppropriate()
 {
-  return;
+  activateIfAppropriate(this);
 }
 
 //// GOODIE
@@ -296,8 +289,12 @@ Penelope::Penelope(StudentWorld* w, double x, double y)
 {}
 void Penelope::doSomething()
 {
+  if(getInfectionDuration() == 500)
+    setDead();
   if(isDead())
     return;
+  if(getInfectionDuration() > 0)
+    increaseInfection();
   StudentWorld* wld = world();
   int key = (*wld).fetchKey(); // StudentWorld Func to fetch (not get) pressed key.
   switch(key){ // Probably a better way to handle this
@@ -356,36 +353,46 @@ void Penelope::doSomething()
     }
     case KEY_PRESS_SPACE:
     {
-	  if(getNumFlameCharges() > 0)
+      if(getNumFlameCharges() > 0)
       {
-		m_flame--;
-		int dir = getDirection();
+        m_flame--;
+        int dir = getDirection();
         double x = getX();
         double y = getY();
         world()->playSound(SOUND_PLAYER_FIRE);
-        for(int i = 1; i < 4; i++)
-        {
-          switch(dir){
-            case up:
+        int i = 1;
+        switch(dir){
+          case up:
+            for(; i < 4; i++)
               if(!world()->isFlameBlockedAt(x, y + SPRITE_WIDTH*i))
                 world()->addActor(new Flame(world(), x, y + SPRITE_WIDTH*i, up));
-              break;
-            case down:
+            break;
+          case down:
+            for(; i < 4; i++)
               if(!world()->isFlameBlockedAt(x, y - SPRITE_WIDTH*i))
                 world()->addActor(new Flame(world(), x, y - SPRITE_WIDTH*i, down));
-              break;
-            case left:
+            break;
+          case left:
+            for(; i < 4; i++)
               if(!world()->isFlameBlockedAt(x - SPRITE_HEIGHT*i, y))
                 world()->addActor(new Flame(world(), x - SPRITE_HEIGHT*i, y, left));
-              break;
-            case right:
+            break;
+          case right:
+            for(; i < 4; i++)
               if(!world()->isFlameBlockedAt(x + SPRITE_HEIGHT*i, y))
                 world()->addActor(new Flame(world(), x + SPRITE_HEIGHT*i, y, right));
-              break;
-            default:
-              break;
-          }
+            break;
+          default:
+            break;
         }
+      }
+    }
+    case KEY_PRESS_ENTER:
+    {
+      if(getNumVaccines() > 0)
+      {
+        --m_vacc;
+        clearInfection();
       }
     }
     default:
@@ -400,7 +407,7 @@ void Penelope::useExitIfAppropriate() // Common Function
 }
 void Penelope::dieByFallOrBurnIfAppropriate()
 {
-  return;
+  setDead();
 }
 void Penelope::pickUpGoodieIfAppropriate(Goodie* g)
 {
@@ -418,7 +425,7 @@ void Penelope::increaseLandmines()
 }
 void Penelope::increaseFlameCharges()
 {
-  m_flame+=5;
+  m_flame+=10; // 5
 }
 int Penelope::getNumVaccines() const
 {

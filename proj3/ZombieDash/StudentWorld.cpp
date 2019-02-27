@@ -115,18 +115,26 @@ int StudentWorld::move()
 		for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
 		{
 				(*p)->doSomething();
-				if(p != m_player && (*p)->isDead() && !(*p)->blocksFlame() && !(*p)->isPit())
-				{
-						delete *p;
-						p = m_contain.erase(p);
-				}
+				// if(p != m_player && (*p)->isDead() && !(*p)->blocksFlame() && !(*p)->isPit())
+				// {
+				// 		delete *p;
+				// 		p = m_contain.erase(p);
+				// }
 		}
-		if((*m_player)->ptr()->isDead()) // Mortal's isAlive() func used
+		if((*m_player)->isDead()) // Mortal's isAlive() func used
 		{
 			decLives();
 			return GWSTATUS_PLAYER_DIED; // Player died, end game
 		}
 		//// REMOVE DEAD ACTORS
+		for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
+		{
+			if((*p)->isDead() && !(*p)->blocksFlame() && !(*p)->isPit())
+			{
+					delete *p;
+					p = m_contain.erase(p);
+			}
+		}
 		//// PRINT STATS
 		ostringstream oss;
 		oss << "Score: " << statScore(getScore()) << "  Level:  " << getLevel() << "  Lives: "
@@ -181,14 +189,17 @@ void StudentWorld::activateOnAppropriateActors(Actor* a)
 
 bool StudentWorld::isFlameBlockedAt(double x, double y)
 {
+	// cerr << "(" << x << "," << y << ")" << endl;
+	if(x >= 240 || y >= 240 || x < 0 || y < 0)
+		return true;
 	for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
 	{
-		if ((*p)->blocksFlame())
-		{
 			double dx = (*p)->getX() - x; double dy = (*p)->getY() - y;
-			if ((dx * dx) + (dy * dy) <= 100)
+			if ((*p)->blocksFlame() && (dx * dx) + (dy * dy) <= 100)
+			{
+				// cerr << (*p)->getX() << ", " << (*p)->getY() << endl;
 				return true;
-		}
+			}
 	}
 	return false;
 }

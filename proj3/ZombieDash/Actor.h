@@ -190,6 +190,7 @@ public:
 
       // How many ticks since this human was infected by vomit?
     int getInfectionDuration() const;
+    void increaseInfection() {m_inf++;}
 private:
   int m_inf;
 };
