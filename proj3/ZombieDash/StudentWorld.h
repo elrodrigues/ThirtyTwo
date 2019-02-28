@@ -34,7 +34,7 @@ public:
 
       // Record that one more citizen on the current level is gone (exited,
       // died, or turned into a zombie).
-    void recordCitizenGone(){}
+    void recordCitizenGone(int status);
 
       // Indicate that the player has finished the level if all citizens
       // are gone.

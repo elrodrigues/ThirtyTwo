@@ -144,7 +144,7 @@ void Flame::doSomething()
     return;
   world()->activateOnAppropriateActors(this);
   m_flametick++;
-  if (m_flametick == 2)
+  if (m_flametick == 2) // 2
     setDead();
 
 }
@@ -180,20 +180,24 @@ void Landmine::doSomething()
 }
 void Landmine::activateIfAppropriate(Actor* a)
 {
-  if(!a->blocksFlame()) //// WILL BE CHANGED`
+  if(!isDead() && !a->blocksFlame()) //// WILL BE CHANGED`
   {
-	  double x = getX();
+    setDead();
+    world()->playSound(SOUND_LANDMINE_EXPLODE);
+    double x = getX();
 	  double y = getY();
+    world()->addActor(new Flame(world(), x, y, up));
     for(int i = -1; i < 2; i++)
       for(int j = -1; j < 2; j++)
-        if(!world()->isFlameBlockedAt(x + SPRITE_HEIGHT*j, y + SPRITE_WIDTH*i))
-            world()->addActor(new Flame(world(), x + SPRITE_HEIGHT*i , y + SPRITE_WIDTH*j, right));
-    setDead();
+        if((i != 0 || j != 0) && !world()->isFlameBlockedAt(x + SPRITE_WIDTH*j, y + SPRITE_HEIGHT*i))
+            world()->addActor(new Flame(world(), x + SPRITE_WIDTH*j , y + SPRITE_HEIGHT*i, up));
+    world()->addActor(new Pit(world(), x, y));
   }
 }
 void Landmine::dieByFallOrBurnIfAppropriate()
 {
-  activateIfAppropriate(this);
+  if(!isDead())
+    activateIfAppropriate(this);
 }
 
 //// GOODIE
@@ -265,7 +269,7 @@ bool Agent::triggersOnlyActiveLandmines() const
 }
 //// Human
 Human::Human(StudentWorld* w, int imageID, double x, double y)
-: Agent(w, imageID, x, y, right), m_inf(0)
+: Agent(w, imageID, x, y, right), m_inf(0), m_istat(false)
 {}
 void Human::beVomitedOnIfAppropriate()
 {
@@ -278,6 +282,7 @@ bool Human::triggersZombieVomit() const
 void Human::clearInfection()
 {
   m_inf = 0;
+  m_istat = false;
 }
 int Human::getInfectionDuration() const
 {
@@ -364,28 +369,29 @@ void Penelope::doSomething()
         switch(dir){
           case up:
             for(; i < 4; i++)
-              if(!world()->isFlameBlockedAt(x, y + SPRITE_WIDTH*i))
-                world()->addActor(new Flame(world(), x, y + SPRITE_WIDTH*i, up));
+              if(!world()->isFlameBlockedAt(x, y + SPRITE_HEIGHT*i))
+                world()->addActor(new Flame(world(), x, y + SPRITE_HEIGHT*i, up));
             break;
           case down:
             for(; i < 4; i++)
-              if(!world()->isFlameBlockedAt(x, y - SPRITE_WIDTH*i))
-                world()->addActor(new Flame(world(), x, y - SPRITE_WIDTH*i, down));
+              if(!world()->isFlameBlockedAt(x, y - SPRITE_HEIGHT*i))
+                world()->addActor(new Flame(world(), x, y - SPRITE_HEIGHT*i, down));
             break;
           case left:
-            for(; i < 4; i++)
-              if(!world()->isFlameBlockedAt(x - SPRITE_HEIGHT*i, y))
-                world()->addActor(new Flame(world(), x - SPRITE_HEIGHT*i, y, left));
+          for(; i < 4; i++)
+            if(!world()->isFlameBlockedAt(x - SPRITE_WIDTH*i, y))
+              world()->addActor(new Flame(world(), x - SPRITE_WIDTH*i, y, right));
             break;
           case right:
             for(; i < 4; i++)
-              if(!world()->isFlameBlockedAt(x + SPRITE_HEIGHT*i, y))
-                world()->addActor(new Flame(world(), x + SPRITE_HEIGHT*i, y, right));
+              if(!world()->isFlameBlockedAt(x + SPRITE_WIDTH*i, y))
+                world()->addActor(new Flame(world(), x + SPRITE_WIDTH*i, y, right));
             break;
           default:
             break;
         }
       }
+      break;
     }
     case KEY_PRESS_ENTER:
     {
@@ -394,6 +400,7 @@ void Penelope::doSomething()
         --m_vacc;
         clearInfection();
       }
+      break;
     }
     default:
       break;
@@ -407,6 +414,7 @@ void Penelope::useExitIfAppropriate() // Common Function
 }
 void Penelope::dieByFallOrBurnIfAppropriate()
 {
+  world()->playSound(SOUND_PLAYER_DIE);
   setDead();
 }
 void Penelope::pickUpGoodieIfAppropriate(Goodie* g)
@@ -425,7 +433,7 @@ void Penelope::increaseLandmines()
 }
 void Penelope::increaseFlameCharges()
 {
-  m_flame+=10; // 5
+  m_flame+=5;
 }
 int Penelope::getNumVaccines() const
 {
@@ -453,8 +461,9 @@ void Citizen::doSomething()
 }
 void Citizen::dieByFallOrBurnIfAppropriate()
 {
-  world()->playSound(SOUND_CITIZEN_DIE);
   setDead();
+  world()->playSound(SOUND_CITIZEN_DIE);
+  world()->recordCitizenGone(0);
 }
 void Citizen::useExitIfAppropriate()
 {

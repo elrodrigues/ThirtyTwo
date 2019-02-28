@@ -67,6 +67,7 @@ public:
 
     virtual Penelope* ptr();
     virtual bool isPit() const;
+    virtual bool isFlame() {return false;}
 
 private:
     bool m_life;
@@ -112,6 +113,7 @@ public:
     Flame(StudentWorld* w, double x, double y, int dir);
     virtual void doSomething();
     virtual void activateIfAppropriate(Actor* a);
+    virtual bool isFlame() {return true;}
 private:
 	int m_flametick;
 };
@@ -193,6 +195,7 @@ public:
     void increaseInfection() {m_inf++;}
 private:
   int m_inf;
+  bool m_istat;
 };
 
 class Penelope : public Human

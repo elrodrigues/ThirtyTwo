@@ -27,6 +27,9 @@ void StudentWorld::addActor(Actor* a)
 }
 void StudentWorld::recordLevelFinishedIfAllCitizensGone()
 {
+	for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
+		if(p != m_player && (*p)->triggersZombieVomit())
+			return;
 	m_fin = true;
 }
 int StudentWorld::init()
@@ -60,7 +63,7 @@ int StudentWorld::init()
 						addActor(new Wall(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
 						break; // Note: 'this' pointer in parameters above get sent to Actor's m_wld
 					case Level::player:
-						addActor(new Penelope(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
+						m_contain.push_front(new Penelope(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
 						m_player = m_contain.begin(); // Set iterator to point to player
 						break;
 					case Level::exit:
@@ -77,6 +80,9 @@ int StudentWorld::init()
 						break;
 					case Level::citizen:
 						addActor(new Citizen(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
+						break;
+					case Level::pit:
+						addActor(new Pit(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
 						break;
 					default:
 						break;
@@ -95,10 +101,15 @@ string statScore(const int sc) // Wrote this for score display.
 		++c;
 		n = n/10;
 	}
+	if(sc < 0)
+		o << "-";
 	for(int i = 0; i < 7 - c; i++)
 		o << "0";
 	if(c > 0)
-		o << sc;
+	{
+		o << (sc < 0 ? -sc : sc);
+	}
+
 	return o.str();
 }
 
@@ -107,33 +118,32 @@ int StudentWorld::move()
     // This code is here merely to allow the game to build, run, and terminate after you hit enter.
     // Notice that the return value GWSTATUS_PLAYER_DIED will cause our framework to end the current level.
 		//// MAKE ACTORS DO SOMETHING
-		if(m_fin)
-			return GWSTATUS_FINISHED_LEVEL;
+
 		m_key = -1;
 		getKey(m_key); // Sets m_key to current key pressed. Useful later
 
 		for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
 		{
 				(*p)->doSomething();
-				// if(p != m_player && (*p)->isDead() && !(*p)->blocksFlame() && !(*p)->isPit())
-				// {
-				// 		delete *p;
-				// 		p = m_contain.erase(p);
-				// }
+				if((*m_player)->isDead()) // Mortal's isAlive() func used
+				{
+					decLives();
+					return GWSTATUS_PLAYER_DIED; // Player died, end game
+				}
+				if(m_fin)
+					return GWSTATUS_FINISHED_LEVEL;
 		}
-		if((*m_player)->isDead()) // Mortal's isAlive() func used
-		{
-			decLives();
-			return GWSTATUS_PLAYER_DIED; // Player died, end game
-		}
-		//// REMOVE DEAD ACTORS
+		//// REMOVE DEAD ACTORS]
+		int k = 0;
 		for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
 		{
-			if((*p)->isDead() && !(*p)->blocksFlame() && !(*p)->isPit())
-			{
-					delete *p;
-					p = m_contain.erase(p);
-			}
+				if((*p)->blocksFlame() || (*p)->isPit())
+					continue;
+				if((*p)->isDead())
+				{
+						delete *p;
+						p = m_contain.erase(p);
+				}
 		}
 		//// PRINT STATS
 		ostringstream oss;
@@ -202,4 +212,12 @@ bool StudentWorld::isFlameBlockedAt(double x, double y)
 			}
 	}
 	return false;
+}
+
+void StudentWorld::recordCitizenGone(int status)
+{
+	if(status)
+		increaseScore(500);
+	else
+		increaseScore(-1000);
 }
