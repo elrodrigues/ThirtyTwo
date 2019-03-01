@@ -44,7 +44,7 @@ public:
     void activateOnAppropriateActors(Actor* a);
 
       // Is an agent blocked from moving to the indicated location?
-    bool isAgentMovementBlockedAt(double row, double col);
+    bool isAgentMovementBlockedAt(double row, double col, const Actor* a);
 
       // Is creation of a flame blocked at the indicated location?
     bool isFlameBlockedAt(double x, double y);
@@ -62,12 +62,11 @@ public:
       // If true, otherX, otherY, and distance will be set to the location and
       // distance of the one nearest to (x,y), and isThreat will be set to true
       // if it's a zombie, false if a Penelope.
-    bool locateNearestCitizenTrigger(double x, double y, double& otherX, double& otherY, double& distance, bool& isThreat) const {return false;}
-
+    bool locateNearestCitizenTrigger(double x, double y, double& otherX, double& otherY, double& distance, bool& isThreat);
       // Return true if there is a living zombie, false otherwise.  If true,
       // otherX, otherY and distance will be set to the location and distance
       // of the one nearest to (x,y).
-    bool locateNearestCitizenThreat(double x, double y, double& otherX, double& otherY, double& distance) const {return false;}
+    bool locateNearestCitizenThreat(double x, double y, double& otherX, double& otherY, double& distance);
     virtual int fetchKey() const; // Grabs private pressed key for Penelope
 private:
   std::list<Actor*> m_contain; // The Container for actors

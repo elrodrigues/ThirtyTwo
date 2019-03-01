@@ -192,7 +192,8 @@ public:
 
       // How many ticks since this human was infected by vomit?
     int getInfectionDuration() const;
-    void increaseInfection() {m_inf++;}
+    virtual void increaseInfection() {m_inf++;}
+    virtual bool isInfected() const {return m_istat;}
 private:
   int m_inf;
   bool m_istat;
@@ -239,6 +240,8 @@ public:
     virtual void doSomething();
     virtual void useExitIfAppropriate();
     virtual void dieByFallOrBurnIfAppropriate();
+private:
+    bool m_paral;
 };
 
 class Zombie : public Agent

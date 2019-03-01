@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <cmath>
 using namespace std;
 
 GameWorld* createStudentWorld(string assetPath)
@@ -166,7 +167,7 @@ int StudentWorld::fetchKey() const
 {
 	return m_key;
 }
-bool StudentWorld::isAgentMovementBlockedAt(double col, double row)
+bool StudentWorld::isAgentMovementBlockedAt(double col, double row, const Actor* a)
 {
 	for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
 	{ // Checks for each actor in container
@@ -174,7 +175,7 @@ bool StudentWorld::isAgentMovementBlockedAt(double col, double row)
 		dx = (dx >= 0 ? dx/16 : (-dx)/16); // Absolute Value
 		dy = (dy >= 0 ? dy/16 : (-dy)/16);
 		double diff = (dx > dy ? dx : dy); // Square Metric to determine collision
-		if(p != m_player && (*p)->blocksMovement() && diff < 1)
+		if(*p != a && (*p)->blocksMovement() && diff < 1)
 		{
 			// cerr << "Pos: " << (*p)->getX() << "," << (*p)->getY() << endl;
 			// cerr << "Dest: " << col << "," << row << endl;
@@ -220,4 +221,69 @@ void StudentWorld::recordCitizenGone(int status)
 		increaseScore(500);
 	else
 		increaseScore(-1000);
+}
+
+double euclidDist(double x, double y, double Ox, double Oy)
+{
+	double dx = x - Ox;
+	double dy = y - Oy;
+	return sqrt((dx*dx) + (dy*dy));
+}
+bool StudentWorld::locateNearestCitizenThreat(double x, double y, double& otherX, double& otherY, double& distance)
+{
+	double dist = VIEW_WIDTH;
+	double fx = -1;
+	double fy = -1;
+	for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
+	{
+		if((*p)->triggersCitizens() && (*p)->threatensCitizens())
+		{
+			double comp = euclidDist(x, y, (*p)->getX(), (*p)->getY());
+			if(dist > comp)
+			{
+				fx = (*p)->getX();
+				fy = (*p)->getY();
+				dist = comp;
+			}
+		}
+	}
+	if(fx == -1 && fy == -1)
+		return false;
+	otherX = fx;
+	otherY = fy;
+	distance = dist;
+	return true;
+}
+bool StudentWorld::locateNearestCitizenTrigger(double x, double y, double& otherX, double& otherY, double& distance, bool& isThreat)
+{
+	double Zx, Zy, distToZ = -1;
+	double Px = (*m_player)->getX();
+	double Py = (*m_player)->getY();
+	double distToP = euclidDist(x, y, Px, Py);
+	if(locateNearestCitizenThreat(x, y, Zx, Zy, distToZ))
+	{
+		if(distToP < distToZ)
+		{
+			otherX = Px;
+			otherY = Py;
+			distance = distToP;
+			isThreat = false;
+			return true;
+		}
+		otherX = Zx;
+		otherY = Zy;
+		distance = distToZ;
+		isThreat = true;
+		return true;
+	}
+	else if((*m_player)->isDead())
+		return false;
+	else
+	{
+		otherX = Px;
+		otherY = Py;
+		distance = distToP;
+		isThreat = false;
+		return true;
+	}
 }

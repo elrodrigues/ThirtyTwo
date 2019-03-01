@@ -124,11 +124,11 @@ Pit::Pit(StudentWorld* w, double x, double y)
 }
 void Pit::doSomething()
 {
-  return;
+  world()->activateOnAppropriateActors(this);
 }
 void Pit::activateIfAppropriate(Actor* a)
 {
-  return;
+  a->dieByFallOrBurnIfAppropriate();
 }
 bool Pit::isPit() const
 {
@@ -295,7 +295,10 @@ Penelope::Penelope(StudentWorld* w, double x, double y)
 void Penelope::doSomething()
 {
   if(getInfectionDuration() == 500)
+  {
     setDead();
+    world()->playSound(SOUND_PLAYER_DIE);
+  }
   if(isDead())
     return;
   if(getInfectionDuration() > 0)
@@ -309,7 +312,7 @@ void Penelope::doSomething()
       double x = getX(); double y = getY() + 4;
       if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT) // Just in case
         return;
-      if((*wld).isAgentMovementBlockedAt(x, y)) // This function checks for collision, in StudentWorld
+      if(world()->isAgentMovementBlockedAt(x, y, this)) // This function checks for collision, in StudentWorld
         return;
       moveTo(x, y);
       break;
@@ -320,7 +323,7 @@ void Penelope::doSomething()
       double x = getX() + 4; double y = getY();
       if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
         return;
-      if((*wld).isAgentMovementBlockedAt(x, y))
+      if(world()->isAgentMovementBlockedAt(x, y, this))
         return;
       moveTo(x, y);
       break;
@@ -331,7 +334,7 @@ void Penelope::doSomething()
       double x = getX(); double y = getY() - 4;
       if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
         return;
-      if((*wld).isAgentMovementBlockedAt(x, y))
+      if(world()->isAgentMovementBlockedAt(x, y, this))
         return;
       moveTo(x, y);
       break;
@@ -342,7 +345,7 @@ void Penelope::doSomething()
       double x = getX() - 4; double y = getY();
       if(x < 0 || y < 0 || x >= VIEW_WIDTH || y >= VIEW_HEIGHT)
         return;
-      if((*wld).isAgentMovementBlockedAt(x, y))
+      if(world()->isAgentMovementBlockedAt(x, y, this))
         return;
       moveTo(x, y);
       break;
@@ -453,11 +456,187 @@ Penelope* Penelope::ptr()
 }
 //// Citizen
 Citizen::Citizen(StudentWorld* w, double x, double y)
-: Human(w, IID_CITIZEN, x, y)
+: Human(w, IID_CITIZEN, x, y), m_paral(false)
 {}
 void Citizen::doSomething()
 {
-  return;
+  int BLOCKDIST = 2;
+  if(isDead())
+    return;
+  if(isInfected())
+  {
+    if(getInfectionDuration() == 500)
+    {
+      setDead();
+      world()->playSound(SOUND_ZOMBIE_BORN);
+      world()->recordCitizenGone(0);
+      randInt(1, 10) > 7 ? world()->addActor(new SmartZombie(world(), getX(), getY())) :
+      world()->addActor(new DumbZombie(world(), getX(), getY()));
+      return;
+    }
+    if(getInfectionDuration() > 0)
+      increaseInfection();
+  }
+  if(m_paral)
+    m_paral = false;
+  else
+  {
+    m_paral = true;
+    double closeX, closeY, dist = -1;
+    double x = getX(); double y = getY();
+    bool isZombie;
+    bool found = world()->locateNearestCitizenTrigger(x, y, closeX, closeY, dist, isZombie);
+    if(!found || dist > 80)
+      return;
+    if(isZombie)
+    {
+      found = world()->locateNearestCitizenThreat(x, y, closeX, closeY, dist);
+      if(!found)
+        return;
+      if(dist <= 80)
+      {
+        int escape = -1;
+        double bestDist = dist;
+        if(!world()->isAgentMovementBlockedAt(x + 2, y, this))
+        {
+          world()->locateNearestCitizenThreat(x + 2, y, closeX, closeY, dist);
+          if(bestDist > dist)
+          {
+            bestDist = dist;
+            escape = right;
+          }
+        }
+        if(!world()->isAgentMovementBlockedAt(x - 2, y, this))
+        {
+          world()->locateNearestCitizenThreat(x - 2, y, closeX, closeY, dist);
+          if(bestDist > dist)
+          {
+            bestDist = dist;
+            escape = left;
+          }
+        }
+        if(!world()->isAgentMovementBlockedAt(x, y + 2, this))
+        {
+          world()->locateNearestCitizenThreat(x, y + 2, closeX, closeY, dist);
+          if(bestDist > dist)
+          {
+            bestDist = dist;
+            escape = up;
+          }
+        }
+        if(!world()->isAgentMovementBlockedAt(x, y - 2, this))
+        {
+          world()->locateNearestCitizenThreat(x, y - 2, closeX, closeY, dist);
+          if(bestDist > dist)
+          {
+            bestDist = dist;
+            escape = down;
+          }
+        }
+
+        switch(escape)
+        {
+          case left:
+          {
+            setDirection(left);
+            moveTo(x - 2, y); break;
+          }
+          case right:
+          {
+            setDirection(right);
+            moveTo(x + 2, y); break;
+          }
+          case up:
+          {
+            setDirection(up);
+            moveTo(x, y + 2); break;
+          }
+          case down:
+          {
+            setDirection(down);
+            moveTo(x, y - 2); break;
+          }
+          default:
+            break;
+        }
+        return;
+      }
+    }
+    else
+    {
+      if(y == closeY) // Same row
+      {
+        if(x > closeX)
+        {
+          setDirection(left);
+          if(!world()->isAgentMovementBlockedAt(x - BLOCKDIST, y, this))
+            moveTo(x - 2, y);
+        }
+        else if(x < closeX)
+        {
+          setDirection(right);
+          if(!world()->isAgentMovementBlockedAt(x + BLOCKDIST, y, this))
+            moveTo(x + 2, y);
+        }
+        return;
+      }
+      else if(x == closeX) // Same column
+      {
+        if(y > closeY)
+        {
+          setDirection(down);
+          if(!world()->isAgentMovementBlockedAt(x, y - BLOCKDIST, this))
+            moveTo(x, y - 2);
+        }
+        else if(y < closeY)
+        {
+          setDirection(up);
+          if(!world()->isAgentMovementBlockedAt(x, y + BLOCKDIST, this))
+            moveTo(x, y + 2);
+        }
+        return;
+      }
+      else // Random
+      {
+        switch(randInt(0, 1))
+        {
+          case 0:
+          {
+            if(x > closeX)
+            {
+              setDirection(left);
+              if(!world()->isAgentMovementBlockedAt(x - BLOCKDIST, y, this))
+                moveTo(x - 2, y);
+            }
+            else if(x < closeX)
+            {
+              setDirection(right);
+              if(!world()->isAgentMovementBlockedAt(x + BLOCKDIST, y, this))
+                moveTo(x + 2, y);
+            }
+            return;
+          }
+          case 1:
+          {
+            if(y > closeY)
+            {
+              setDirection(down);
+              if(!world()->isAgentMovementBlockedAt(x, y - BLOCKDIST, this))
+                moveTo(x, y - 2);
+            }
+            else if(y < closeY)
+            {
+              setDirection(up);
+              if(!world()->isAgentMovementBlockedAt(x, y + BLOCKDIST, this))
+                moveTo(x, y + 2);
+            }
+            return;
+          }
+        }
+      }
+    }
+  }
+
 }
 void Citizen::dieByFallOrBurnIfAppropriate()
 {
@@ -467,7 +646,9 @@ void Citizen::dieByFallOrBurnIfAppropriate()
 }
 void Citizen::useExitIfAppropriate()
 {
-  return;
+  setDead();
+  world()->recordCitizenGone(1);
+  world()->playSound(SOUND_CITIZEN_SAVED);
 }
 //// Zombie
 Zombie::Zombie(StudentWorld* w, double x, double y)
