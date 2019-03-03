@@ -1,0 +1,12 @@
+Question 2:
+I found two issues while examining and compiling the program:
+1) The function findFirstAtLeast() called in insert() compares two Coord objects using the '<' operator
+See: for (; p != m_head && p->m_value < value; p = p->m_next)
+
+The class Coord does not have a operator< function that overloads '<'.
+However, I don't see this as a compilation error in Visual, and as a warning in g32 because there probably is a template function in the standard library that allows this part to compile (although it is probably the wrong implementation).
+
+2) The function insert() itself compares two Coord objects later using '=='.
+See: if (p != m_head && p->m_value == value)
+
+The class Coord does not have a 'operator==' function that overloads '=='. The compiler complains about this issue as this time there is neither a function nor template function that is acceptable to compare Coord objects using '=='.
