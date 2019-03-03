@@ -10,3 +10,7 @@ However, I don't see this as a compilation error in Visual, and as a warning in 
 See: if (p != m_head && p->m_value == value)
 
 The class Coord does not have a 'operator==' function that overloads '=='. The compiler complains about this issue as this time there is neither a function nor template function that is acceptable to compare Coord objects using '=='.
+
+Question 3b:
+With the constraints of part a, implementing a single-parameter listAll() with recursion is not possible since at each stage in the recursion, the path of the previous steps is not known to the current execution.
+External functions to retrieve this path cannot be used as per the constraints, and listAll() return type is void, so the last path cannot be returned to the previous stage to be printed.
