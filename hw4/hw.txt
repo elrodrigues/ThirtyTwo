@@ -14,3 +14,19 @@ The class Coord does not have a 'operator==' function that overloads '=='. The c
 Question 3b:
 With the constraints of part a, implementing a single-parameter listAll() with recursion is not possible since at each stage in the recursion, the path of the previous steps is not known to the current execution.
 External functions to retrieve this path cannot be used as per the constraints, and listAll() return type is void, so the last path cannot be returned to the previous stage to be printed.
+
+Question 4:
+a> The time complexity of this algorithm is of order O(N^3) since the line in the inner-most loop, i.e. `numIntermediaries[i][j]--;`, can run at-worst N*(N-1)*(N-2) times.
+
+b> The time complexity of this algorithm is still of order O(N^3) since the line in the inner-most loop, i.e. `numIntermediaries[i][j]--;`, can run at-worst N*(N-1)*(N-2)/2 times.
+
+Question 5:
+a> The worst case time complexity of this algorithm is O(N^2) since the loop at the bottom runs N times, and the following lines are of order O(N):
+sp->get(k, v); // O(N) because it will loop over list at most N/2 times
+result.insert(v); // O(N) because insert() calls findFirstAtLeast() which is O(N)
+
+b> The time complexity depends on the multiplication factor of push_back. On average, it is O(N*log(N)) if we assume we use the STL vector class. This is because all the loops in that algorithm will visit nodes or vector elements at most N times and the sort algorithm is of order O(N*log(N)), and push_back on average would occasionally reallocate the array. Deletion of vector is O(1). insertBefore() and doErase() are O(1) too.
+
+At worst, if push_back reallocates the array every time it is called (so the array if full stays full), then the complexity becomes O(N^2) since the loop can now make O(N^2) calls.
+
+c> The time complexity of this algorithm is O(N^2) since the while loop could potentially run in order of N^2 times in a worst case scenario.
