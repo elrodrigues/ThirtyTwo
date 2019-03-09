@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+int NUM_BASE = 4;
+
 template<typename ValueType>
 class Trie
 {
@@ -22,42 +24,53 @@ private:
     {
       std::string m_label;
       std::vector<ValueType> m_val;
-      Node* m_children[4];
+      Node* m_child[NUM_BASE];
     };
     Node* m_root;
-
+    bool hasNoChildren;
     void deleteAllNodes(Node*& ptr);
-    bool emptyChildren(Node*& ptr) const;
-    Node* findByRecursion(const std::string& key, bool exactMatchOnly, int& pos, Node* ptr) const;
+    bool isChildrenEmpty(Node*& ptr) const;
+    bool findByRecursion(const std::string& key, bool exactMatchOnly, int& pos, Node* ptr, Node*& res) const;
 };
 // PRIVATE: ARRAY VER
 template<typename ValueType>
+bool Trie<ValueType>::isChildrenEmpty(Node*& ptr)
+{
+  return haveNoChildren;
+}
 
 
 template<typename ValueType>
 void Trie<ValueType>::deleteAllNodes(Node*& ptr)
 {
-  if()
+  if(ptr == nullptr || ptr->hasNoChildren)
     return;
-  for(std::size_t t = 0; t < ptr->m_children.size(); t++)
+  for(int t = 0; t < NUM_BASE; t++)
   {
-    deleteAllNodes(ptr->m_children[t]);
-    delete ptr->m_children[t];
-    --t;
+    deleteAllNodes(ptr->m_child[t]);
+    delete ptr->m_child[t];
   }
 }
 
 template<typename ValueType>
-typename Trie<ValueType>::Node* Trie<ValueType>::findByRecursion(const std::string& key,
-  bool exactMatchOnly, int& pos, Node* ptr) const
+bool Trie<ValueType>::findByRecursion(const std::string& key,
+  bool exactMatchOnly, int& pos, Node* ptr, Node*& res) const
 { // Make position, ptr ref. Set return to bool instead.
-  if(ptr == nullptr)
-    return nullptr;
-  for(int i = 0; i < ptr->m_children.size; i++)
+  if(pos == key.size())
   {
-
+    res = ptr;
+    return true;
   }
-  return nullptr;
+  if(ptr == nullptr || ptr->hasNoChildren)
+    return false;
+  int p = pos + 1;
+  for(int i = 0; i < NUM_BASE; i++)
+  {
+      if(findByRecursion(key, exactMatchOnly, p, ptr->m_child[1], res))
+      {
+
+      }
+  }
 }
 
 // PUBLIC
@@ -88,7 +101,8 @@ void Trie<ValueType>::insert(const std::string& key, const ValueType& value)
 template<typename ValueType>
 std::vector<ValueType> Trie<ValueType>::find(const std::string& key, bool exactMatchOnly) const
 {
-  findByRecursion(key, exactMatchOnly, 0, m_root);
+  Node* result = nullptr;
+  findByRecursion(key, exactMatchOnly, 0, m_root, result);
   std::vector<ValueType> v;
   return v;
 }
