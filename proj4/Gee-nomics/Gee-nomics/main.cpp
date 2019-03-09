@@ -4,6 +4,7 @@ using namespace std;
 
 int main()
 {
+
   Trie<int>* t = new Trie<int>;
   t->insert("ATG", 4);
   cerr << t->test("ATG") << endl;
@@ -19,4 +20,5 @@ int main()
   cerr << t->test("ACGTG") << endl;
   cerr << "Test Passed" << endl;
   delete t;
+
 }
