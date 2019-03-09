@@ -67,7 +67,8 @@ public:
 
     virtual Penelope* ptr();
     virtual bool isPit() const;
-    virtual bool isFlame() {return false;}
+    virtual void setInfected() {return;}
+
 
 private:
     bool m_life;
@@ -87,6 +88,11 @@ class ActivatingObject : public Actor
 {
 public:
     ActivatingObject(StudentWorld* w, int imageID, double x, double y, int dir, int depth);
+    int getTick() const {return m_tick;}
+    void increaseTick() {m_tick++;}
+    void doSomethingAndTick(ActivatingObject* a);
+private:
+  int m_tick;
 };
 
 class Exit : public ActivatingObject
@@ -113,9 +119,6 @@ public:
     Flame(StudentWorld* w, double x, double y, int dir);
     virtual void doSomething();
     virtual void activateIfAppropriate(Actor* a);
-    virtual bool isFlame() {return true;}
-private:
-	int m_flametick;
 };
 
 class Vomit : public ActivatingObject
@@ -178,6 +181,10 @@ public:
     Agent(StudentWorld* w, int imageID, double x, double y, int dir);
     virtual bool blocksMovement() const;
     virtual bool triggersOnlyActiveLandmines() const;
+    virtual bool getParal() const {return m_paral;}
+    virtual void setParal(bool p) {m_paral = p;}
+private:
+    bool m_paral;
 };
 
 class Human : public Agent
@@ -194,6 +201,7 @@ public:
     int getInfectionDuration() const;
     virtual void increaseInfection() {m_inf++;}
     virtual bool isInfected() const {return m_istat;}
+    virtual void setInfected();
 private:
   int m_inf;
   bool m_istat;
@@ -240,14 +248,20 @@ public:
     virtual void doSomething();
     virtual void useExitIfAppropriate();
     virtual void dieByFallOrBurnIfAppropriate();
-private:
-    bool m_paral;
 };
 
 class Zombie : public Agent
 {
 public:
     Zombie(StudentWorld* w,  double x, double y);
+    virtual bool triggersCitizens() const;
+    virtual bool threatensCitizens() const;
+    virtual bool getStep() const {return m_step;}
+    virtual void decStep() {m_step--;}
+    virtual void setStep(int i) {m_step = i;}
+    virtual void resetStep() {m_step = 0;}
+private:
+  int m_step;
 };
 
 class DumbZombie : public Zombie

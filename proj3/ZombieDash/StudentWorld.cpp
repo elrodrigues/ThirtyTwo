@@ -13,6 +13,12 @@ GameWorld* createStudentWorld(string assetPath)
 }
 
 // Students:  Add code to this file, StudentWorld.h, Actor.h and Actor.cpp
+double euclidDist(double x, double y, double Ox, double Oy)
+{
+	double dx = x - Ox;
+	double dy = y - Oy;
+	return sqrt((dx*dx) + (dy*dy));
+}
 
 StudentWorld::StudentWorld(string assetDir)
 : GameWorld(assetDir), m_key(-1), m_fin(false) // Initialize m_key to -1.
@@ -84,6 +90,12 @@ int StudentWorld::init()
 						break;
 					case Level::pit:
 						addActor(new Pit(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
+						break;
+					case Level::dumb_zombie:
+						addActor(new DumbZombie(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
+						break;
+					case Level::smart_zombie:
+						addActor(new SmartZombie(this, SPRITE_WIDTH*i, SPRITE_HEIGHT*j));
 						break;
 					default:
 						break;
@@ -222,13 +234,16 @@ void StudentWorld::recordCitizenGone(int status)
 	else
 		increaseScore(-1000);
 }
-
-double euclidDist(double x, double y, double Ox, double Oy)
+bool StudentWorld::isZombieVomitTriggerAt(double x, double y)
 {
-	double dx = x - Ox;
-	double dy = y - Oy;
-	return sqrt((dx*dx) + (dy*dy));
+	for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
+	{
+		if((*p)->triggersZombieVomit() && euclidDist(x, y, (*p)->getX(), (*p)->getY()) <= 10)
+			return true;
+	}
+	return false;
 }
+
 bool StudentWorld::locateNearestCitizenThreat(double x, double y, double& otherX, double& otherY, double& distance)
 {
 	double dist = VIEW_WIDTH;
@@ -248,7 +263,9 @@ bool StudentWorld::locateNearestCitizenThreat(double x, double y, double& otherX
 		}
 	}
 	if(fx == -1 && fy == -1)
+	{
 		return false;
+	}
 	otherX = fx;
 	otherY = fy;
 	distance = dist;
@@ -286,4 +303,32 @@ bool StudentWorld::locateNearestCitizenTrigger(double x, double y, double& other
 		isThreat = false;
 		return true;
 	}
+}
+
+bool StudentWorld::locateNearestVomitTrigger(double x, double y, double& otherX, double& otherY, double& distance)
+{
+	double dist = VIEW_WIDTH;
+	double fx = -1;
+	double fy = -1;
+	for(list<Actor*>::iterator p = m_contain.begin(); p != m_contain.end(); p++)
+	{
+		if((*p)->triggersZombieVomit())
+		{
+			double comp = euclidDist(x, y, (*p)->getX(), (*p)->getY());
+			if(dist > comp)
+			{
+				fx = (*p)->getX();
+				fy = (*p)->getY();
+				dist = comp;
+			}
+		}
+	}
+	if(fx == -1 && fy == -1)
+	{
+		return false;
+	}
+	otherX = fx;
+	otherY = fy;
+	distance = dist;
+	return true;
 }

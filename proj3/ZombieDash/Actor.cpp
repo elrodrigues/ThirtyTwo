@@ -1,6 +1,7 @@
 #include "Actor.h"
 #include "StudentWorld.h"
 #include "GameConstants.h"
+#include <cmath>
 
 // Students:  Add code to this file, Actor.h, StudentWorld.h, and StudentWorld.cpp
 // Description of functions in Actor.h. Added some description for func behavior
@@ -93,7 +94,7 @@ bool Wall::blocksFlame() const
 }
 //// ACTIVATINGOBJECT
 ActivatingObject::ActivatingObject(StudentWorld* w, int imageID, double x, double y, int dir, int depth)
-: Actor(w, imageID, x, y, dir, depth)
+: Actor(w, imageID, x, y, dir, depth), m_tick(0)
 {}
 //// EXIT
 Exit::Exit(StudentWorld* w, double x, double y)
@@ -134,18 +135,22 @@ bool Pit::isPit() const
 {
   return true;
 }
+void ActivatingObject::doSomethingAndTick(ActivatingObject* a)
+{
+  a->world()->activateOnAppropriateActors(a);
+  a->m_tick++;
+  if(a->m_tick == 2)
+    a->setDead();
+}
 //// FLAME
 Flame::Flame(StudentWorld* w, double x, double y, int dir)
-: ActivatingObject(w, IID_FLAME, x, y, dir, 0), m_flametick(0)
+: ActivatingObject(w, IID_FLAME, x, y, dir, 0)
 {}
 void Flame::doSomething()
 {
 	if(isDead())
     return;
-  world()->activateOnAppropriateActors(this);
-  m_flametick++;
-  if (m_flametick == 2) // 2
-    setDead();
+  doSomethingAndTick(this);
 
 }
 void Flame::activateIfAppropriate(Actor* a)
@@ -159,11 +164,16 @@ Vomit::Vomit(StudentWorld* w, double x, double y, int dir)
 {}
 void Vomit::doSomething()
 {
-  return;
+  if(isDead())
+    return;
+  doSomethingAndTick(this);
 }
 void Vomit::activateIfAppropriate(Actor* a)
 {
-  return;
+  if(a->triggersZombieVomit())
+  {
+    a->setInfected();
+  }
 }
 //// LANDMINES
 Landmine::Landmine(StudentWorld* w, double x, double y)
@@ -257,7 +267,7 @@ void LandmineGoodie::pickUp(Penelope* p)
 }
 //// Agent
 Agent::Agent(StudentWorld* w, int imageID, double x, double y, int dir)
-: Actor(w, imageID, x, y, dir, 0)
+: Actor(w, imageID, x, y, dir, 0), m_paral(false)
 {}
 bool Agent::blocksMovement() const
 {
@@ -271,6 +281,10 @@ bool Agent::triggersOnlyActiveLandmines() const
 Human::Human(StudentWorld* w, int imageID, double x, double y)
 : Agent(w, imageID, x, y, right), m_inf(0), m_istat(false)
 {}
+void Human::setInfected()
+{
+  m_istat = true;
+}
 void Human::beVomitedOnIfAppropriate()
 {
   return;
@@ -294,15 +308,18 @@ Penelope::Penelope(StudentWorld* w, double x, double y)
 {}
 void Penelope::doSomething()
 {
-  if(getInfectionDuration() == 500)
-  {
-    setDead();
-    world()->playSound(SOUND_PLAYER_DIE);
-  }
   if(isDead())
     return;
-  if(getInfectionDuration() > 0)
+  if(isInfected())
+  {
+    if(getInfectionDuration() == 500)
+    {
+      setDead();
+      world()->playSound(SOUND_PLAYER_DIE);
+      return;
+    }
     increaseInfection();
+  }
   StudentWorld* wld = world();
   int key = (*wld).fetchKey(); // StudentWorld Func to fetch (not get) pressed key.
   switch(key){ // Probably a better way to handle this
@@ -456,7 +473,7 @@ Penelope* Penelope::ptr()
 }
 //// Citizen
 Citizen::Citizen(StudentWorld* w, double x, double y)
-: Human(w, IID_CITIZEN, x, y), m_paral(false)
+: Human(w, IID_CITIZEN, x, y)
 {}
 void Citizen::doSomething()
 {
@@ -474,14 +491,13 @@ void Citizen::doSomething()
       world()->addActor(new DumbZombie(world(), getX(), getY()));
       return;
     }
-    if(getInfectionDuration() > 0)
-      increaseInfection();
+    increaseInfection();
   }
-  if(m_paral)
-    m_paral = false;
+  if(getParal())
+    setParal(false);
   else
   {
-    m_paral = true;
+    setParal(true);
     double closeX, closeY, dist = -1;
     double x = getX(); double y = getY();
     bool isZombie;
@@ -500,7 +516,7 @@ void Citizen::doSomething()
         if(!world()->isAgentMovementBlockedAt(x + 2, y, this))
         {
           world()->locateNearestCitizenThreat(x + 2, y, closeX, closeY, dist);
-          if(bestDist > dist)
+          if(bestDist < dist)
           {
             bestDist = dist;
             escape = right;
@@ -509,7 +525,7 @@ void Citizen::doSomething()
         if(!world()->isAgentMovementBlockedAt(x - 2, y, this))
         {
           world()->locateNearestCitizenThreat(x - 2, y, closeX, closeY, dist);
-          if(bestDist > dist)
+          if(bestDist < dist)
           {
             bestDist = dist;
             escape = left;
@@ -518,7 +534,7 @@ void Citizen::doSomething()
         if(!world()->isAgentMovementBlockedAt(x, y + 2, this))
         {
           world()->locateNearestCitizenThreat(x, y + 2, closeX, closeY, dist);
-          if(bestDist > dist)
+          if(bestDist < dist)
           {
             bestDist = dist;
             escape = up;
@@ -527,7 +543,7 @@ void Citizen::doSomething()
         if(!world()->isAgentMovementBlockedAt(x, y - 2, this))
         {
           world()->locateNearestCitizenThreat(x, y - 2, closeX, closeY, dist);
-          if(bestDist > dist)
+          if(bestDist < dist)
           {
             bestDist = dist;
             escape = down;
@@ -652,19 +668,109 @@ void Citizen::useExitIfAppropriate()
 }
 //// Zombie
 Zombie::Zombie(StudentWorld* w, double x, double y)
-: Agent(w, IID_ZOMBIE, x, y, right)
+: Agent(w, IID_ZOMBIE, x, y, right), m_step(0)
 {}
+bool Zombie::triggersCitizens() const
+{
+  return true;
+}
+bool Zombie::threatensCitizens() const
+{
+  return true;
+}
 //// DumbZombie
 DumbZombie::DumbZombie(StudentWorld* w, double x, double y)
 : Zombie(w, x, y)
 {}
 void DumbZombie::doSomething()
 {
-  return;
+  if(isDead())
+    return;
+  if(getParal())
+  {
+    setParal(false);
+    return;
+  }
+  else
+  {
+    setParal(true);
+    int dir = getDirection();
+    double vx, vy = -1;
+    switch(dir)
+    {
+      case left:
+        vx = getX() - SPRITE_WIDTH; vy = getY();
+        break;
+      case right:
+        vx = getX() + SPRITE_WIDTH; vy = getY();
+        break;
+      case up:
+        vx = getX(); vy = getY() + SPRITE_HEIGHT;
+        break;
+      case down:
+        vx = getX(); vy = getY() - SPRITE_HEIGHT;
+        break;
+      default:
+        break;
+    }
+    if(world()->isZombieVomitTriggerAt(vx, vy) && randInt(0, 2) == 2)
+    {
+      world()->addActor(new Vomit(world(), vx, vy, getDirection()));
+      world()->playSound(SOUND_ZOMBIE_VOMIT);
+      return;
+    }
+    if(getStep() == 0)
+    {
+      setStep(randInt(3, 10));
+      switch(randInt(1, 4))
+      {
+        case 1:
+          setDirection(left);
+          break;
+        case 2:
+          setDirection(right);
+          break;
+        case 3:
+          setDirection(up);
+          break;
+        case 4:
+          setDirection(down);
+          break;
+      }
+    }
+    double destx, desty = -1;
+    switch(getDirection())
+    {
+      case left:
+        destx = getX() - 1; desty = getY();
+        break;
+      case right:
+        destx = getX() + 1; desty = getY();
+        break;
+      case up:
+        destx = getX(); desty = getY() + 1;
+        break;
+      case down:
+        destx = getX(); desty = getY() - 1;
+        break;
+    }
+    if(!world()->isAgentMovementBlockedAt(destx, desty, this))
+    {
+      moveTo(destx, desty);
+      decStep();
+    }
+    else
+    {
+      resetStep();
+    }
+
+  }
 }
 void DumbZombie::dieByFallOrBurnIfAppropriate()
 {
-  return;
+  setDead();
+  world()->increaseScore(1000);
+  world()->playSound(SOUND_ZOMBIE_DIE);
 }
 //// SmartZombie
 SmartZombie::SmartZombie(StudentWorld* w, double x, double y)
@@ -672,9 +778,143 @@ SmartZombie::SmartZombie(StudentWorld* w, double x, double y)
 {}
 void SmartZombie::doSomething()
 {
-  return;
+  if(isDead())
+    return;
+  if(getParal())
+  {
+    setParal(false);
+    return;
+  }
+  else
+  {
+    setParal(true);
+    int dir = getDirection();
+    double vx, vy = -1;
+    switch(dir)
+    {
+      case left:
+        vx = getX() - SPRITE_WIDTH; vy = getY();
+        break;
+      case right:
+        vx = getX() + SPRITE_WIDTH; vy = getY();
+        break;
+      case up:
+        vx = getX(); vy = getY() + SPRITE_HEIGHT;
+        break;
+      case down:
+        vx = getX(); vy = getY() - SPRITE_HEIGHT;
+        break;
+      default:
+        break;
+    }
+    if(world()->isZombieVomitTriggerAt(vx, vy) && randInt(0, 2) == 2)
+    {
+      world()->addActor(new Vomit(world(), vx, vy, getDirection()));
+      world()->playSound(SOUND_ZOMBIE_VOMIT);
+      return;
+    }
+    if(getStep() == 0)
+    {
+      setStep(randInt(3, 10));
+      double ox, oy = -1;
+      double dist = -1;
+      double x = getX();
+      double y = getY();
+      world()->locateNearestVomitTrigger(x, y, ox, oy, dist);
+      if(dist <= 80)
+      {
+        if(ox == x)
+        {
+          if(y < oy)
+            setDirection(up);
+          else
+            setDirection(down);
+        }
+        else if(oy == y)
+        {
+          if(x < ox)
+            setDirection(right);
+          else
+            setDirection(left);
+        }
+        else
+        {
+          switch(randInt(0, 1))
+          {
+            case 0:
+            {
+              if(x > ox)
+              {
+                setDirection(left);
+              }
+              else if(x < ox)
+              {
+                setDirection(right);
+              }
+              break;
+            }
+            case 1:
+            {
+              if(y > oy)
+              {
+                setDirection(down);
+              }
+              else if(y < oy)
+              {
+                setDirection(up);
+              }
+              break;
+            }
+        }
+      }
+      switch(randInt(1, 4))
+      {
+        case 1:
+          setDirection(left);
+          break;
+        case 2:
+          setDirection(right);
+          break;
+        case 3:
+          setDirection(up);
+          break;
+        case 4:
+          setDirection(down);
+          break;
+      }
+    }
+    double destx, desty = -1;
+    switch(getDirection())
+    {
+      case left:
+        destx = getX() - 1; desty = getY();
+        break;
+      case right:
+        destx = getX() + 1; desty = getY();
+        break;
+      case up:
+        destx = getX(); desty = getY() + 1;
+        break;
+      case down:
+        destx = getX(); desty = getY() - 1;
+        break;
+    }
+    if(!world()->isAgentMovementBlockedAt(destx, desty, this))
+    {
+      moveTo(destx, desty);
+      decStep();
+    }
+    else
+    {
+      resetStep();
+    }
+}
+  }
 }
 void SmartZombie::dieByFallOrBurnIfAppropriate()
 {
-  return;
+  setDead();
+  world()->increaseScore(2000);
+  world()->playSound(SOUND_ZOMBIE_DIE);
+  
 }

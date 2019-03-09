@@ -51,12 +51,12 @@ public:
 
       // Is there something at the indicated location that might cause a
       // zombie to vomit (i.e., a human)?
-    bool isZombieVomitTriggerAt(double x, double y) const {return false;}
+    bool isZombieVomitTriggerAt(double x, double y);
 
       // Return true if there is a living human, otherwise false.  If true,
       // otherX, otherY, and distance will be set to the location and distance
       // of the human nearest to (x,y).
-    bool locateNearestVomitTrigger(double x, double y, double& otherX, double& otherY, double& distance) {return false;}
+    bool locateNearestVomitTrigger(double x, double y, double& otherX, double& otherY, double& distance);
 
       // Return true if there is a living zombie or Penelope, otherwise false.
       // If true, otherX, otherY, and distance will be set to the location and
