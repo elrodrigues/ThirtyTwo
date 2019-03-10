@@ -34,6 +34,16 @@ int main()
   vector<int> val3 = t->find("hkt", false);
   for(size_t k = 0; k < val3.size(); k++)
     cerr << val3[k] << ",";
+  cerr << endl;
+  t->reset();
+  t->insert("ACTG", 42);
+  val3 = t->find("ACTG", false);
+  for(size_t k = 0; k < val3.size(); k++)
+    cerr << val3[k] << ",";
+  cerr << endl;
+  val3 = t->find("hkt", false);
+  for(size_t k = 0; k < val3.size(); k++)
+    cerr << val3[k] << ",";
   cerr << endl << "Test Passed" << endl;
   delete t;
 
