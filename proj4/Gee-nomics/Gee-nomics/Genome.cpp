@@ -1,5 +1,6 @@
 #include "provided.h"
 #include <string>
+#include <cctype>
 #include <vector>
 #include <iostream>
 #include <istream>
@@ -28,10 +29,56 @@ GenomeImpl::GenomeImpl(const string& nm, const string& sequence)
 bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
 {
     string s;
+    bool flag_hasName = false;
+    bool flag_hasSeq = false;
+    string name;
+    string seq;
     while(getline(genomeSource, s))
     {
-      // Do Something
+      if(s == "" || s == ">")
+        return false;
+      if(!flag_hasName && s[0] != '>')
+        return false;
+      if(s[0] == '>')
+      {
+        if(flag_hasName)
+        {
+          genomes.push_back(Genome(name, seq));
+          name = "";
+          seq = "";
+          flag_hasSeq = false;
+        }
+        else
+        {
+          flag_hasName = true;
+        }
+        name = s.substr(1, s.size() - 1);
+      }
+      else
+      {
+        flag_hasSeq = true;
+        for(int i = 0; i < s.size(); i++)
+          switch(s[i]){
+            case 'A':
+            case 'a':
+            case 'C':
+            case 'c':
+            case 'G':
+            case 'g':
+            case 'T':
+            case 't':
+            case 'N':
+            case 'n':
+              seq += toupper(s[i]); break;
+            default:
+              return false;
+          }
+      }
     }
+    if(!flag_hasSeq)
+      return false;
+    else
+      genomes.push_back(Genome(name, seq));
     return true;  // This compiles, but may not be correct
 }
 
@@ -54,7 +101,7 @@ bool GenomeImpl::extract(int position, int length, string& fragment) const
     fragment = "";
     for(int i = 0; i < length; i++)
       fragment += m_seq[position + i];
-    return true;  // This compiles, but may not be correct
+    return true;
 }
 
 //******************** Genome functions ************************************

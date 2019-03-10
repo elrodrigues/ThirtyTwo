@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "Trie.h"
 #include "provided.h"
 using namespace std;
@@ -45,10 +46,29 @@ int main()
   val3 = t->find("hkt", false);
   for(size_t k = 0; k < val3.size(); k++)
     cerr << val3[k] << ",";
+  // Specify the full path and name of the gene data file on your hard drive.
+  string filename = "../data/Ferroplasma_acidarmanus.txt";
+  // Open the data file and get a ifstreamobject that can be used to read its// contents.
+  ifstream strm(filename);
+  if (!strm)
+  {
+    cout << "Cannot open " << filename << endl;
+    delete t;
+    return -1;
+  }
+  vector<Genome> vg;
+  bool success = Genome::load(strm, vg);
+  // Load the data via the stream.
+  if (success)
+  {
+    cout << "Loaded " << vg.size() << " genomes successfully:"<< endl;
+    for (int k = 0; k != vg.size(); k++)
+      cout << vg[k].name() << endl;
+  }
+  else
+    cout << "Error loading genome data"<< endl;
 
-  Genome* g = new Genome("test", "ACG");
   cerr << endl << "Test Passed" << endl;
   delete t;
-  delete g;
 
 }
