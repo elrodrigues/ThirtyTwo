@@ -6,19 +6,35 @@ int main()
 {
 
   Trie<int>* t = new Trie<int>;
-  t->insert("ATG", 4);
-  cerr << t->test("ATG") << endl;
-  t->insert("ACG", 9);
-  cerr << t->test("ACG") << endl;
-  t->insert("ACG", 69);
-  cerr << t->test("ACG") << endl;
-  t->insert("ATG", 420);
-  cerr << t->test("ATG") << endl;
-  cerr << t->test("AT") << endl;
+  t->insert("hit", 1);
+  t->insert("hit", 2);
+  t->insert("hip", 10);
+  t->insert("hip", 20);
+  t->insert("hi", 9);
+  t->insert("hi", 17);
+  t->insert("hat", 10);
+  t->insert("hat", 2);
+  t->insert("hat", 5);
+  t->insert("hat", 10);
+  t->insert("a", 14);
+  t->insert("to", 22);
+  t->insert("to", 23);
+  t->insert("hap", 19);
+  t->insert("hap", 6);
+  t->insert("hap", 32);
 
-  t->insert("ACGTG", 55);
-  cerr << t->test("ACGTG") << endl;
-  cerr << "Test Passed" << endl;
+  vector<int> val = t->find("hit", true);
+  for(size_t k = 0; k < val.size(); k++)
+    cerr << val[k] << ",";
+  cerr << endl;
+  vector<int> val2 = t->find("hit", false);
+  for(size_t k = 0; k < val2.size(); k++)
+    cerr << val2[k] << ",";
+  cerr << endl;
+  vector<int> val3 = t->find("hkt", false);
+  for(size_t k = 0; k < val3.size(); k++)
+    cerr << val3[k] << ",";
+  cerr << endl << "Test Passed" << endl;
   delete t;
 
 }

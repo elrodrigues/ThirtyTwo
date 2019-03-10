@@ -32,7 +32,7 @@ private:
     Node* m_root;
 
     void deleteAllNodes(Node*& ptr);
-    int findByRecursion(const std::string& key, bool exactMatchOnly, int pos, Node* ptr, Node*& res) const;
+    int findByRecursion(const std::string& key, bool exactMatchOnly, int pos, Node* ptr, std::vector<Node*>& res) const;
     Node* insertNode(Node* ptr, char c);
 
 
@@ -42,16 +42,6 @@ template<typename ValueType>
 Trie<ValueType>::Node::Node()
 : hasNoChildren(true)
 {}
-
-template<typename ValueType> // DELETE
-bool Trie<ValueType>::test(const std::string& key) const
-{
-  Node* p = nullptr;
-  bool f = findByRecursion(key, true, 0, m_root, p) == key.size();
-  for(size_t i = 0; i < p->m_val.size(); i++)
-    std::cerr << p->m_val[i] << std::endl;
-  return f;
-}
 
 template<typename ValueType>
 void Trie<ValueType>::deleteAllNodes(Node*& ptr)
@@ -66,26 +56,43 @@ void Trie<ValueType>::deleteAllNodes(Node*& ptr)
 }
 
 template<typename ValueType>
-int Trie<ValueType>::findByRecursion(const std::string& key,
-  bool exactMatchOnly, int pos, Node* ptr, Node*& res) const
+int Trie<ValueType>::findByRecursion(const std::string& key, bool exactMatchOnly, int pos, Node* ptr, std::vector<Node*>& res) const
 {
   if(pos == key.size() || ptr == nullptr || ptr->hasNoChildren)
   {
-    res = ptr;
+    res.push_back(ptr);
     return pos;
   }
   int low = 0; int high = ptr->m_child.size() - 1;
   int mid = (low + high) / 2;
+  int p = pos;
   while(low <= high)
   {
     char c = ptr->m_child[mid]->m_label;
     if(c == key[pos])
-      return findByRecursion(key, exactMatchOnly, pos + 1, ptr->m_child[mid], res);
+    {
+      p = findByRecursion(key, exactMatchOnly, pos + 1, ptr->m_child[mid], res);
+      break;
+    }
     (c < key[pos]) ? (low = mid + 1) : (high = mid - 1);
     mid = (low + high) / 2;
   }
-  res = ptr;
-  return pos;
+  if(p == pos)
+    res.push_back(ptr);
+  if(!exactMatchOnly && pos > 0)
+  {
+    int oth_p;
+    for(std::size_t i = 0; i < ptr->m_child.size(); i++)
+    {
+      if(ptr->m_child[i]->m_label != key[pos])
+      {
+        oth_p = findByRecursion(key, true, pos + 1, ptr->m_child[i], res);
+        if(oth_p != key.size())
+          res.pop_back();
+      }
+    }
+  }
+  return p;
 }
 
 template<typename ValueType>
@@ -100,16 +107,31 @@ typename Trie<ValueType>::Node* Trie<ValueType>::insertNode(Node* ptr, char c)
   }
   else
   {
+    bool flag = true;
     for(typename std::vector<Node*>::iterator p = ptr->m_child.begin(); p != ptr->m_child.end(); p++)
       if((*p)->m_label > c)
       {
         ptr->m_child.insert(p, n);
+        flag = false;
         break;
       }
+    if(flag)
+      ptr->m_child.insert(ptr->m_child.end(), n);
   }
   return n;
 }
 // PUBLIC
+template<typename ValueType> // DELETE
+bool Trie<ValueType>::test(const std::string& key) const
+{
+  std::vector<Node*> t;
+  bool f = findByRecursion(key, true, 0, m_root, t) == key.size();
+  Node* p = t[0];
+  for(size_t i = 0; i < p->m_val.size(); i++)
+    std::cerr << p->m_val[i] << std::endl;
+  return f;
+}
+
 template<typename ValueType>
 Trie<ValueType>::Trie()
 : m_root(nullptr)
@@ -133,8 +155,9 @@ void Trie<ValueType>::insert(const std::string& key, const ValueType& value)
     m_root->m_child[0]->m_label = key[0];
     m_root->hasNoChildren = false;
   }
-  Node* r = nullptr;
-  int p = findByRecursion(key, true, 0, m_root, r);
+  std::vector<Node*> vec_r;
+  int p = findByRecursion(key, true, 0, m_root, vec_r);
+  Node* r = vec_r[0];
   for(; p < key.size(); p++)
   {
     r = insertNode(r, key[p]);
@@ -145,9 +168,14 @@ void Trie<ValueType>::insert(const std::string& key, const ValueType& value)
 template<typename ValueType>
 std::vector<ValueType> Trie<ValueType>::find(const std::string& key, bool exactMatchOnly) const
 {
-  Node* result = nullptr;
-  findByRecursion(key, exactMatchOnly, 0, m_root, result);
+  std::vector<Node*> result;
   std::vector<ValueType> v;
+  int pos = 0;
+  pos = findByRecursion(key, exactMatchOnly, pos, m_root, result);
+  for(std::size_t i = 0; i < result.size(); i++)
+  {
+    v.insert(v.end(), result[i]->m_val.begin(), result[i]->m_val.end());
+  }
   return v;
 }
 
