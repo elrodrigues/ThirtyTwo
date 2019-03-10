@@ -18,8 +18,6 @@ public:
     Trie(const Trie&) = delete;
     Trie& operator=(const Trie&) = delete;
 
-    //// DELETE!
-    bool test(const std::string& key) const;
 private:
     struct Node
     {
@@ -121,17 +119,6 @@ typename Trie<ValueType>::Node* Trie<ValueType>::insertNode(Node* ptr, char c)
   return n;
 }
 // PUBLIC
-template<typename ValueType> // DELETE
-bool Trie<ValueType>::test(const std::string& key) const
-{
-  std::vector<Node*> t;
-  bool f = findByRecursion(key, true, 0, m_root, t) == key.size();
-  Node* p = t[0];
-  for(size_t i = 0; i < p->m_val.size(); i++)
-    std::cerr << p->m_val[i] << std::endl;
-  return f;
-}
-
 template<typename ValueType>
 Trie<ValueType>::Trie()
 : m_root(nullptr)
