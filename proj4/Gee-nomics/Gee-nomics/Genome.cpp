@@ -14,31 +14,47 @@ public:
     string name() const;
     bool extract(int position, int length, string& fragment) const;
 private:
+    string m_name;
+    string m_seq;
+    int m_size;
 };
 
 GenomeImpl::GenomeImpl(const string& nm, const string& sequence)
+: m_name(nm), m_seq(sequence)
 {
-    // This compiles, but may not be correct
+    m_size = m_seq.size();
 }
 
-bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes) 
+bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
 {
-    return false;  // This compiles, but may not be correct
+    string s;
+    while(getline(genomeSource, s))
+    {
+      // Do Something
+    }
+    return true;  // This compiles, but may not be correct
 }
 
 int GenomeImpl::length() const
 {
-    return 0;  // This compiles, but may not be correct
+    return m_size;  // This compiles, but may not be correct
 }
 
 string GenomeImpl::name() const
 {
-    return "";  // This compiles, but may not be correct
+    return m_name;  // This compiles, but may not be correct
 }
 
 bool GenomeImpl::extract(int position, int length, string& fragment) const
 {
-    return false;  // This compiles, but may not be correct
+    if(position >= m_size || position < 0 || length < 1)
+      return false;
+    if(position + length > m_size)
+      return false;
+    fragment = "";
+    for(int i = 0; i < length; i++)
+      fragment += m_seq[position + i];
+    return true;  // This compiles, but may not be correct
 }
 
 //******************** Genome functions ************************************
@@ -69,7 +85,7 @@ Genome& Genome::operator=(const Genome& rhs)
     return *this;
 }
 
-bool Genome::load(istream& genomeSource, vector<Genome>& genomes) 
+bool Genome::load(istream& genomeSource, vector<Genome>& genomes)
 {
     return GenomeImpl::load(genomeSource, genomes);
 }

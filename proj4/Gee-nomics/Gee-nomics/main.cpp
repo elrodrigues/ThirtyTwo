@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Trie.h"
+#include "provided.h"
 using namespace std;
 
 int main()
@@ -44,7 +45,10 @@ int main()
   val3 = t->find("hkt", false);
   for(size_t k = 0; k < val3.size(); k++)
     cerr << val3[k] << ",";
+
+  Genome* g = new Genome("test", "ACG");
   cerr << endl << "Test Passed" << endl;
   delete t;
+  delete g;
 
 }
