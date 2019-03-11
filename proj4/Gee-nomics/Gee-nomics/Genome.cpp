@@ -79,17 +79,17 @@ bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
       return false;
     else
       genomes.push_back(Genome(name, seq));
-    return true;  // This compiles, but may not be correct
+    return true;
 }
 
 int GenomeImpl::length() const
 {
-    return m_size;  // This compiles, but may not be correct
+    return m_size;
 }
 
 string GenomeImpl::name() const
 {
-    return m_name;  // This compiles, but may not be correct
+    return m_name;
 }
 
 bool GenomeImpl::extract(int position, int length, string& fragment) const
@@ -122,8 +122,8 @@ Genome::~Genome()
 Genome::Genome(const Genome& other)
 {
     m_impl = new GenomeImpl(*other.m_impl);
+    
 }
-
 Genome& Genome::operator=(const Genome& rhs)
 {
     GenomeImpl* newImpl = new GenomeImpl(*rhs.m_impl);

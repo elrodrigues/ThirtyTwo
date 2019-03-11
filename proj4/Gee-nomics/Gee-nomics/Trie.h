@@ -27,6 +27,14 @@ private:
       std::vector<Node*> m_child;
       bool hasNoChildren;
     };
+    // struct isPointer
+    // {
+    //   const bool value = false;
+    // }
+    // struct isPointer<T*>
+    // {
+    //   const bool value = true;
+    // }
     Node* m_root;
 
     void deleteAllNodes(Node*& ptr);
@@ -129,7 +137,6 @@ Trie<ValueType>::~Trie()
 {
   deleteAllNodes(m_root);
   delete m_root;
-  std::cerr << "Trie deleted" << std::endl;
 }
 
 template<typename ValueType>
