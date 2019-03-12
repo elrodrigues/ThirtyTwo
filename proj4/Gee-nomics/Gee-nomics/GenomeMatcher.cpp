@@ -2,6 +2,8 @@
 #include "Trie.h"
 #include <string>
 #include <vector>
+#include <map>
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 using namespace std;
@@ -21,6 +23,8 @@ private:
 
   int checkSequence(int number, int position, const string& fragment, int minLength,
     bool exactMatchOnly, string& res) const;
+  static bool predicateByPercent(GenomeMatch g1, GenomeMatch g2);
+  static bool predicateByName(GenomeMatch g1, GenomeMatch g2);
 };
 // PRIVATE
 int GenomeMatcherImpl::checkSequence(int number, int position, const string& fragment, int minLength,
@@ -66,7 +70,16 @@ int GenomeMatcherImpl::checkSequence(int number, int position, const string& fra
   // cerr << res << endl;
   return res.size();
 }
-
+bool GenomeMatcherImpl::predicateByPercent(GenomeMatch g1, GenomeMatch g2)
+{
+  return g1.percentMatch >= g2.percentMatch;
+}
+bool GenomeMatcherImpl::predicateByName(GenomeMatch g1, GenomeMatch g2)
+{
+  if(g1.percentMatch == g2.percentMatch)
+    return g1.genomeName <= g2.genomeName;
+  return false;
+}
 // PUBLIC
 GenomeMatcherImpl::GenomeMatcherImpl(int minSearchLength)
 {
@@ -133,12 +146,51 @@ bool GenomeMatcherImpl::findGenomesWithThisDNA(const string& fragment, int minim
         matches.push_back(match);
       }
     }
-    return flag_matchFound;  // This compiles, but may not be correct
+    return flag_matchFound;
 }
 
 bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatchLength, bool exactMatchOnly, double matchPercentThreshold, vector<GenomeMatch>& results) const
 {
-    return false;  // This compiles, but may not be correct
+    if(fragmentMatchLength < m_searchLength)
+      return false;
+    int numSeq = query.length() / fragmentMatchLength;
+    if(numSeq < 1)
+      return false;
+    if(matchPercentThreshold < 0 || matchPercentThreshold > 100)
+      return false;
+    string fragment;
+    results.erase(results.begin(), results.end());
+    map<string, double> matches;
+    int adjustedLength = numSeq * fragmentMatchLength;
+    for(int i = 0; i < adjustedLength; i += fragmentMatchLength)
+    {
+      query.extract(i, fragmentMatchLength, fragment);
+      vector<DNAMatch> similarGenomes;
+      bool found = findGenomesWithThisDNA(fragment, fragmentMatchLength, exactMatchOnly, similarGenomes);
+      if(found)
+      {
+        for(size_t k = 0; k < similarGenomes.size(); k++)
+        {
+          if(matches.find(similarGenomes[k].genomeName) == matches.end())
+            matches[similarGenomes[k].genomeName] = 0.0;
+          matches[similarGenomes[k].genomeName] += 1.0;
+        }
+      }
+    }
+    for(map<string, double>::iterator p = matches.begin(); p != matches.end(); p++)
+    {
+      double percent = (p->second / numSeq)*100;
+      if(percent >= matchPercentThreshold)
+      {
+        GenomeMatch gMatch;
+        gMatch.genomeName = p->first;
+        gMatch.percentMatch = percent;
+        results.push_back(gMatch);
+      }
+    }
+    sort(results.begin(), results.end(), GenomeMatcherImpl::predicateByPercent);
+    sort(results.begin(), results.end(), GenomeMatcherImpl::predicateByName);
+    return results.size() > 0;  // This compiles, but may not be correct
 }
 
 //******************** GenomeMatcher functions ********************************

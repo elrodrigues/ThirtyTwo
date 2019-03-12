@@ -69,16 +69,30 @@ int main()
   }
   else
     cout << "Error loading genome data"<< endl;
-  vector<DNAMatch> res;
-  bool yes = gm.findGenomesWithThisDNA("GAAG", 5, true, res);
+  ifstream strm2("../data/Hen.txt");
+  vg.erase(vg.begin(), vg.end());
+  Genome::load(strm2, vg);
+  // vector<DNAMatch> res;
+  // bool yes = gm.findGenomesWithThisDNA("GAAG", 5, true, res);
+  // if(yes)
+  // {
+  //   for (int k = 0; k != res.size(); k++)
+  //     cout << res[k].genomeName << " at " << res[k].position << " with length "
+  //     << res[k].length << endl;
+  // }
+  // else
+  //   cout << "None Found. Size: " << res.size() << endl;
+  vector<GenomeMatch> gg;
+  cerr << vg[0].name() << endl;
+  bool yes = gm.findRelatedGenomes(vg[0], 7, false, 5, gg);
   if(yes)
   {
-    for (int k = 0; k != res.size(); k++)
-      cout << res[k].genomeName << " at " << res[k].position << " with length "
-      << res[k].length << endl;
+    for (int k = 0; k != gg.size(); k++)
+      cout << gg[k].genomeName << " with match: " << gg[k].percentMatch << "%"
+      << endl;
   }
   else
-    cout << "None Found. Size: " << res.size() << endl;
+    cout << "None Found. Size: " << gg.size() << endl;
   cerr << endl << "Test Passed" << endl;
   // delete t;
 }
