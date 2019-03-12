@@ -52,7 +52,6 @@ int GenomeMatcherImpl::checkSequence(int number, int position, const string& fra
         if(countMismatch == 2)
         {
           flag_errorCaught = true;
-          // cerr << "loop: " << res << endl;
           flag_Mismatch = true;
           break;
         }
@@ -67,7 +66,6 @@ int GenomeMatcherImpl::checkSequence(int number, int position, const string& fra
   }
   if(flag_errorCaught)
     res = res.substr(0, res.size() - 1);
-  // cerr << res << endl;
   return res.size();
 }
 bool GenomeMatcherImpl::predicateByPercent(GenomeMatch g1, GenomeMatch g2)
@@ -190,7 +188,7 @@ bool GenomeMatcherImpl::findRelatedGenomes(const Genome& query, int fragmentMatc
     }
     sort(results.begin(), results.end(), GenomeMatcherImpl::predicateByPercent);
     sort(results.begin(), results.end(), GenomeMatcherImpl::predicateByName);
-    return results.size() > 0;  // This compiles, but may not be correct
+    return results.size() > 0;
 }
 
 //******************** GenomeMatcher functions ********************************
