@@ -47,7 +47,7 @@ int main()
   // for(size_t k = 0; k < val3.size(); k++)
   //   cerr << val3[k] << ",";
   // Specify the full path and name of the gene data file on your hard drive.
-  string filename = "../data/Halorubrum_chaoviator.txt";
+  string filename = "../data/Ferroplasma_boba.txt";
   // Open the data file and get a ifstreamobject that can be used to read its// contents.
   ifstream strm(filename);
   if (!strm)
@@ -59,17 +59,26 @@ int main()
   vector<Genome> vg;
   bool success = Genome::load(strm, vg);
   // Load the data via the stream.
+  GenomeMatcher gm(4);
   if (success)
   {
     cout << "Loaded " << vg.size() << " genomes successfully:"<< endl;
-    for (int k = 0; k != vg.size(); k++)
-      cout << vg[k].name() << endl;
+    for (int k = 0; k != vg.size(); k++){
+      gm.addGenome(vg[k]);
+    }
   }
   else
     cout << "Error loading genome data"<< endl;
-
-  GenomeMatcher gm(10);
-  gm.addGenome(vg[0]);
+  vector<DNAMatch> res;
+  bool yes = gm.findGenomesWithThisDNA("GAAG", 5, true, res);
+  if(yes)
+  {
+    for (int k = 0; k != res.size(); k++)
+      cout << res[k].genomeName << " at " << res[k].position << " with length "
+      << res[k].length << endl;
+  }
+  else
+    cout << "None Found. Size: " << res.size() << endl;
   cerr << endl << "Test Passed" << endl;
   // delete t;
 }

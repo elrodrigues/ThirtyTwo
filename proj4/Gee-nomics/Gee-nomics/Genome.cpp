@@ -94,7 +94,7 @@ string GenomeImpl::name() const
 
 bool GenomeImpl::extract(int position, int length, string& fragment) const
 {
-    if(position >= m_size || position < 0 || length < 1)
+    if(position >= m_size || position < 0 || length < 0)
       return false;
     if(position + length > m_size)
       return false;
@@ -122,7 +122,7 @@ Genome::~Genome()
 Genome::Genome(const Genome& other)
 {
     m_impl = new GenomeImpl(*other.m_impl);
-    
+
 }
 Genome& Genome::operator=(const Genome& rhs)
 {
