@@ -1,0 +1,71 @@
+Question 1:
+a)
+50
+  20
+    10
+      XX
+      15
+    40
+      30
+        25
+        38
+      XX
+  60
+    XX
+    70
+      65
+      80
+        72
+        XX
+b)
+Pre-Order: 50, 20, 10, 15, 40, 30, 25, 38, 60, 70, 65, 80, 72
+In-Order: 10, 15, 20, 25, 30, 38, 40, 50, 60, 65, 70, 72, 80
+Post-Order: 15, 10, 25, 38, 30, 40, 20, 65, 72, 80, 70, 60, 50
+
+c) After deleting 30, then 20, one possible BST is:
+50
+  15
+    10
+    40
+      38
+        25
+        XX
+      XX
+  60
+    XX
+    70
+      65
+      80
+        72
+        XX
+
+Question 2:
+a)
+struct Node
+{
+  int m_val;
+  Node* m_children[2];
+  Node* m_parent;
+};
+
+b) Adapted from textbook in pages 472 - 473
+For a new node 'newNode', inserting the node can be done by calling the function:
+insert(rootPtr, newNodePtr) where rootPtr is the root pointer, and newNodePtr is the pointer to the new node.
+
+The `insert` function is defined below:
+insert(subTreePtr: NodePointer, newNodePtr: NodePointer): NodePointer
+  if (subTreePtr is nullptr)
+    return newNodePtr
+  else if (subTreePtr->getItem() > newNodePtr->getItem())
+  {
+    tempPtr = insert(subTreePtr->getLeftChildPtr(), newNodePtr)
+    subTreePtr->setLeftChildPtr(tempPtr)
+    tempPtr->setParent(subTreePtr)
+  }
+  else if (subTreePtr->getItem() < newNodePtr->getItem())
+  {
+    tempPtr = insert(subTreePtr->getRightChildPtr(), newNodePtr)
+    subTreePtr->setRightChildPtr(tempPtr)
+    tempPtr->setParent(subTreePtr)
+  }
+  return subTreePtr
