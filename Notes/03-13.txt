@@ -1,0 +1,118 @@
+>Complete Binary Tree and Heaps
+90
+  60
+    40
+      10
+      30
+    50
+  80
+    70
+    20
+Complete Binary tree of length 9
+
+Heaps useful for sorting. Useful for storing portion of ordered data -> minheaps and maxheaps.
+
+Non-tree representation of heaps:
+80(0)
+  65(1)
+    40(3)
+      10(7)
+      30(8)
+    60(4)
+      55(9)
+      XX
+  70(2)
+    50(5)
+    20(6)
+0   1   2   3   4   5   6   7   8   9   10    11
+80  65  70  40  60  50  20  10  30  55
+Size: 10
+
+What about children and parents?
+parent(i):
+  1 -> 0
+  2 -> 0
+  3 -> 1
+  4 -> 1
+  5 -> 2
+  6 -> 2
+  7 -> 3
+  8 -> 3
+parent(i) = floor((i - 1) / 2) is the parent function.
+
+children(j) = {2j + 1, 2j + 2} if they exist.
+
+Inserting: O(1) to push at end. Then bubble new node up O(log N).
+Erasing: O(1) to pop front, then move bottom-most item in tree to top. Then trickle down O(log N).
+
+>Heapsort
+0   1   2   3   4   5
+6   3   5   9   2   10
+6
+  3
+    9
+    2
+  5
+    10
+Step 1: Heapify this tree; Going bottom-up, starting at bottom-right.
+= Make each nod the root of a heap. Then trickle down. (Maxheap)
+6
+  3
+    9
+    2
+  10
+    5 (no children so done)
+==
+6
+  9
+    3 (no children so done)
+    2
+  10
+    5
+==
+10
+  9
+    3
+    2
+  6
+    5
+
+0   1   2   3   4   5|
+10  9   6   3   2   5|
+
+This is now a heap. Now need to pop the heap
+1) Take out 10, and put 10 in same array (a swap)
+0   1   2   3   4   |5
+5   9   6   3   2   |10
+size: 6 - 1 = 5
+(re-heapify)
+0   1   2   3   4   |5
+9   5   6   3   2   |10
+size: 5
+0   1   2   3   |4   5
+2   5   6   3   |9   10
+size: 4
+(re-heapify)
+0   1   2   3   |4   5
+6   5   2   3   |9   10
+size: 4
+0   1   2   |3   4   5
+3   5   2   |6   9   10
+size: 3
+0   1   2   |3   4   5
+5   3   2   |6   9   10
+size: 3
+0   1   |2   3   4   5
+2   3   |5   6   9   10
+size: 2
+(compare 0, 1): true
+|0   1   2   3   4   5
+|2   3   5   6   9   10
+size: 0; Sorted. Complexity: O(N*log N)
+> N logN sorts:
+quicksort: worst case O(N^2). Constant of proportionality for N log N is best of three. Requires random access.
+  introsort: worst case O(N log N): Switch to heapsort beyond depth level of 2*log N. Best compromise
+mergesort: requires extra storage to have a good constant of proportionality. Worst case O(N log N). Works with linked lists.
+  requires O(N) space.
+heapsort: const of proportionality not as good as quicksort. Worst case O(N log N). Requires random access.
+  requires O(1) space.
