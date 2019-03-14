@@ -15,49 +15,49 @@ public:
     string name() const;
     bool extract(int position, int length, string& fragment) const;
 private:
-    string m_name;
-    string m_seq;
-    int m_size;
+    string m_name; // name
+    string m_seq; // DNA sequence
+    int m_size; // size of sequence
 };
 
 GenomeImpl::GenomeImpl(const string& nm, const string& sequence)
 : m_name(nm), m_seq(sequence)
 {
-    m_size = m_seq.size();
+    m_size = m_seq.size(); // Set to sequence size.
 }
 
 bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
 {
-    string s;
-    bool flag_hasName = false;
-    bool flag_hasSeq = false;
+    string s; // Line from file
+    bool flag_hasName = false; // has a Name
+    bool flag_hasSeq = false; // has a Sequence
     string name;
     string seq;
     while(getline(genomeSource, s))
     {
-      if(s == "" || s == ">")
+      if(s == "" || s == ">") // Check Format
         return false;
       if(!flag_hasName && s[0] != '>')
         return false;
       if(s[0] == '>')
       {
-        if(flag_hasName)
+        if(flag_hasName) // If at next Genome
         {
-          genomes.push_back(Genome(name, seq));
-          name = "";
+          genomes.push_back(Genome(name, seq)); // Push current one in
+          name = ""; // Reset
           seq = "";
           flag_hasSeq = false;
         }
         else
         {
-          flag_hasName = true;
+          flag_hasName = true; // Set flag to true
         }
         name = s.substr(1, s.size() - 1);
       }
       else
       {
         flag_hasSeq = true;
-        for(int i = 0; i < s.size(); i++)
+        for(int i = 0; i < s.size(); i++) // Go Through Line
           switch(s[i]){
             case 'A':
             case 'a':
@@ -69,16 +69,16 @@ bool GenomeImpl::load(istream& genomeSource, vector<Genome>& genomes)
             case 't':
             case 'N':
             case 'n':
-              seq += toupper(s[i]); break;
+              seq += toupper(s[i]); break; // Add base to sequence
             default:
-              return false;
+              return false; // Wrong base
           }
       }
     }
-    if(!flag_hasSeq)
+    if(!flag_hasSeq) // Error checking
       return false;
     else
-      genomes.push_back(Genome(name, seq));
+      genomes.push_back(Genome(name, seq)); // Add final genome
     return true;
 }
 
@@ -94,12 +94,12 @@ string GenomeImpl::name() const
 
 bool GenomeImpl::extract(int position, int length, string& fragment) const
 {
-    if(position >= m_size || position < 0 || length < 0)
+    if(position >= m_size || position < 0 || length < 0) // Error checking
       return false;
     if(position + length > m_size)
       return false;
     fragment = "";
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; i++) // Extract Fragment
       fragment += m_seq[position + i];
     return true;
 }

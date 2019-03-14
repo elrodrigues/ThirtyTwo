@@ -1,0 +1,68 @@
+1)
+I believe all the classes work fine. Functions that could potentially fail are findGenomesWithThisDNA and findRelatedGenomes.
+The functions produce correct output with all tests mentioned in spec, including the test harness.
+
+2)
+I believe all functions satisfy the big-O requirements.
+
+3)
+1>find():
+This function calls a private member function called findByRecursion. This helped partition the work.
+I will write pseudo-code for both functions and mark the call to findByRecursion in find() with (*).
+vector<ValueType> find(const string key, bool exactMatchOnly) const
+{
+  Call findByRecursion() to get `result` vector of nodes. (*)
+  for Nodes in result:
+    insert Nodes' value at end of ValueType vector
+  return ValueType vector
+}
+
+int findByRecursion(const string key, bool exactMatchOnly, int Position, Node* ptr, vector<Node*>& result) const
+{
+  if at end of key OR ptr is nullpointer OR Node has no Children
+    push ptr into result
+    return Position
+
+  Do binary search on Trie to find character of key at position Position:
+    if found in loop:
+      call findByRecursion with same arguments but increase position by 1 and pass Node's child.
+      save position returned by findByRecursion (Say it is named I)
+      break
+  if I == Position:
+    push ptr into result
+
+  if exactMatchOnly is false AND Position > 0:
+    for each child in Node of ptr with value != key[Position]:
+      call findByRecursion with same arguments but increase position by 1, pass Node's child and set exactMatchOnly parameter to true in this call.
+      save position returned from this call.
+      if this position != Index of the end of key:
+        pop the last item of the vector result.
+
+  return I
+}
+
+2>findGenomesWithThisDNA()
+This function calls a private member function called checkSequence() to check if the sequence is appropriate to be added. I will mark the line where it's called with (*).
+
+bool findGenomesWithThisDNA(const string& fragment, int minimumLength, bool exactMatchOnly, vector<DNAMatch>& matches) const
+{
+  if TrieSearchLength > minimumLength:
+    return false
+  if fragment's size smaller than either TrieSearchLength or minimumLength:
+    return false
+
+  call Trie's find() with first TrieSearchLength characters of fragment.
+  save the returned vector of values in the Trie.
+
+  for each Genome and GenomePosition in above vector:
+    compare fragement to rest of sequence of Genome at GenomePosition. (*)
+
+    if the size of this sequence is >= minimumLength:
+      Loop through matches vector to check for duplicate Genome objects:
+        if found and its sequence length is < length of current sequence:
+          remove DNAMatch object associated to duplicate Genome.
+          push new DNAMatch object with current Genome and current sequence.
+
+  return true if match found.
+  else return false.
+}

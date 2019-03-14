@@ -69,3 +69,29 @@ insert(subTreePtr: NodePointer, newNodePtr: NodePointer): NodePointer
     tempPtr->setParent(subTreePtr)
   }
   return subTreePtr
+
+Question 3:
+a)
+7
+  3
+    0
+    2
+  6
+    4
+    XX
+b)
+Index:0   1   2   3   4   5   6
+      7   3   6   0   2   4
+c)
+Index:0   1   2   3   4   5
+      6   3   4   0   2
+
+Question 4:
+a) O(C + S)
+b) O(log C + S)
+c) O(log C + log S)
+d) O(C + log S)
+e) O(C + S)
+f) O(log C + S)
+g) O(S + C)
+h) O(S + log C)
