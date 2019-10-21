@@ -1,2 +1,2 @@
-# CS32
-Repository for CS32, Winter19.
+# CS ThirtyTwo
+Repository for CS Thirty-Two, Winter19.
